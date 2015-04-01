@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Texture">
+      <UniqueIdentifier>{cbe14ebc-5f1b-4b6e-89bd-68f39a137f3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{ca2102c8-9422-42c7-b1c3-bb4a66e7e38e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture\libpng">
+      <UniqueIdentifier>{8af5e096-3d49-4e59-a3f9-e13777307f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{425f9fc7-5740-43ca-aa3a-eec654df9274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toolkit">
+      <UniqueIdentifier>{5d51ab4f-2264-4428-adab-a28a124e9e46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Storage">
+      <UniqueIdentifier>{f628ff0a-86ce-4c42-9969-2f0fe38cddb5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hc3dContentLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\Mipmap.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\Shader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\CImg.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\libpng\png.h">
+      <Filter>Texture\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\libpng\pngconf.h">
+      <Filter>Texture\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\libpng\pngdebug.h">
+      <Filter>Texture\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\libpng\pnginfo.h">
+      <Filter>Texture\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\libpng\pngpriv.h">
+      <Filter>Texture\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\libpng\pngstruct.h">
+      <Filter>Texture\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture\libpng\pnglibconf.h">
+      <Filter>Texture\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="zconf.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="hc3dToolkit.h">
+      <Filter>Toolkit</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLib.h">
+      <Filter>Storage</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hc3dContentLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\Mipmap.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader\Shader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\png.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngerror.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngget.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngmem.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngpread.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngread.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngrio.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngrtran.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngrutil.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngset.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngtrans.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngwio.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngwrite.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngwtran.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\libpng\pngwutil.c">
+      <Filter>Texture\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="hc3dToolkit.cpp">
+      <Filter>Toolkit</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderLib.cpp">
+      <Filter>Storage</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

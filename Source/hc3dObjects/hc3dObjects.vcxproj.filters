@@ -1,0 +1,857 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{124d1e7e-b0ad-4e81-b51e-45b336171b37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Atmosphere">
+      <UniqueIdentifier>{70034f4a-628c-4e9f-aba7-4d0e63c862f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parent">
+      <UniqueIdentifier>{3b0ebd62-3877-465f-825a-58cdd50e41b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Terrain">
+      <UniqueIdentifier>{42bf5712-756b-48f2-aaef-780582780a1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Butterfly">
+      <UniqueIdentifier>{b6495837-a0b2-4796-aeac-80d888f7ca37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Grass">
+      <UniqueIdentifier>{ba245f60-0162-4be6-8314-567d522a4a8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Clouds">
+      <UniqueIdentifier>{bd2dd0be-301c-471e-be8b-70b92bba2fa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Tree">
+      <UniqueIdentifier>{a14f93be-dece-4ae4-af0e-acbd41bcac1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\GameWindow">
+      <UniqueIdentifier>{7b69dcb2-cedc-474f-b0e6-7bf0136562f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Water">
+      <UniqueIdentifier>{fd9b044c-696e-4312-929d-0791f38ce821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Star">
+      <UniqueIdentifier>{702f0fa4-5a45-40c5-82fb-9862ebbb1d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Stone">
+      <UniqueIdentifier>{35cab8bc-19df-4288-b9e9-82bdfd09d8e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Fish">
+      <UniqueIdentifier>{f3adec78-94be-4171-8a4a-ae5bcfba226e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Ocean">
+      <UniqueIdentifier>{cf22511e-2b80-4f8f-aecd-6ef2ffd058b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Ocean\glm">
+      <UniqueIdentifier>{6f433378-70b8-4cd2-b3e2-fdfdba5e76f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Ocean\glm\core">
+      <UniqueIdentifier>{605921e3-f2e1-4f31-af7e-66670dae9078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Ocean\glm\gtc">
+      <UniqueIdentifier>{f83270aa-163a-4786-917e-e16be97ac244}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Ocean\glm\gtx">
+      <UniqueIdentifier>{f8971e22-4e0a-4448-bcb6-0108a00a53ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Ocean\glm\virtrev">
+      <UniqueIdentifier>{ad1cdea5-1975-4815-a498-5ca17bbf066f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+    <Text Include="Objects\Ocean\glm\CMakeLists.txt">
+      <Filter>Objects\Ocean\glm</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Atmosphere\Atmosphere.h">
+      <Filter>Objects\Atmosphere</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Parent</Filter>
+    </ClInclude>
+    <ClInclude Include="hc3dObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Terrain\Terrain.h">
+      <Filter>Objects\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Butterfly\Butterfly.h">
+      <Filter>Objects\Butterfly</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Grass\Grass.h">
+      <Filter>Objects\Grass</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Clouds\Clouds.h">
+      <Filter>Objects\Clouds</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Tree\Tree.h">
+      <Filter>Objects\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\GameWindow\GameWindow.h">
+      <Filter>Objects\GameWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Water\Water.h">
+      <Filter>Objects\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Star\Star.h">
+      <Filter>Objects\Star</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Stone\Stone.h">
+      <Filter>Objects\Stone</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Fish\Fish.h">
+      <Filter>Objects\Fish</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\Ocean.h">
+      <Filter>Objects\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\complex.h">
+      <Filter>Objects\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\fft.h">
+      <Filter>Objects\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\vector.h">
+      <Filter>Objects\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\misc.h">
+      <Filter>Objects\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glhelper.h">
+      <Filter>Objects\Ocean</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\ext.hpp">
+      <Filter>Objects\Ocean\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\glm.hpp">
+      <Filter>Objects\Ocean\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\_detail.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\_fixes.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\_swizzle.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_common.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_exponential.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_geometric.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_integer.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_matrix.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_noise.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_packing.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_trigonometric.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\func_vector_relational.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\hint.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_common.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_exponential.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_geometric.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_matrix.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_trigonometric.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_vector_relational.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\setup.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_float.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_gentype.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_half.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_int.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat2x2.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat2x3.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat2x4.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat3x2.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat3x3.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat3x4.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat4x2.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat4x3.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat4x4.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_size.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec1.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec2.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec3.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec4.hpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\half_float.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_access.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_integer.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_inverse.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_transform.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\quaternion.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\swizzle.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\type_precision.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtc\type_ptr.hpp">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\associated_min_max.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\bit.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\closest_point.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\color_cast.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\color_space.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\color_space_YCoCg.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\compatibility.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\component_wise.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\epsilon.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\euler_angles.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\extend.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\extented_min_max.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\fast_exponential.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\fast_square_root.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\fast_trigonometry.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\gradient_paint.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\handed_coordinate_space.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\inertia.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\int_10_10_10_2.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\integer.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\intersect.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\log_base.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_cross_product.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_interpolation.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_major_storage.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_operation.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_query.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\mixed_product.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\multiple.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\noise.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\norm.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\normal.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\normalize_dot.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\number_precision.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\ocl_type.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\optimum_pow.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\orthonormalize.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\perpendicular.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\polar_coordinates.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\projection.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\quaternion.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\random.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\raw_data.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\reciprocal.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\rotate_vector.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\simd_mat4.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\simd_vec4.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\simplex.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\spline.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\std_based_type.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\string_cast.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\transform.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\transform2.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\ulp.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\unsigned_int.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\vec1.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\vector_access.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\vector_angle.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\vector_query.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\verbose_operator.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\gtx\wrap.hpp">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Ocean\glm\virtrev\xstream.hpp">
+      <Filter>Objects\Ocean\glm\virtrev</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hc3dObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Atmosphere\Atmosphere.cpp">
+      <Filter>Objects\Atmosphere</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Terrain\Terrain.cpp">
+      <Filter>Objects\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Butterfly\Butterfly.cpp">
+      <Filter>Objects\Butterfly</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Grass\Grass.cpp">
+      <Filter>Objects\Grass</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Clouds\Clouds.cpp">
+      <Filter>Objects\Clouds</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Tree\Tree.cpp">
+      <Filter>Objects\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\GameWindow\GameWindow.cpp">
+      <Filter>Objects\GameWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Water\Water.cpp">
+      <Filter>Objects\Water</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Star\Star.cpp">
+      <Filter>Objects\Star</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Stone\Stone.cpp">
+      <Filter>Objects\Stone</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Fish\Fish.cpp">
+      <Filter>Objects\Fish</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Ocean\Ocean.cpp">
+      <Filter>Objects\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Ocean\complex.cc">
+      <Filter>Objects\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Ocean\fft.cc">
+      <Filter>Objects\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Ocean\vector.cc">
+      <Filter>Objects\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Ocean\misc.cc">
+      <Filter>Objects\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Ocean\glhelper.cc">
+      <Filter>Objects\Ocean</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Ocean\glm\core\dummy.cpp">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Objects\Ocean\glm\core\func_common.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_exponential.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_geometric.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_integer.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_matrix.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_noise.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_packing.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_trigonometric.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\func_vector_relational.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\intrinsic_common.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\intrinsic_exponential.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\intrinsic_geometric.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\intrinsic_matrix.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\intrinsic_trigonometric.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\intrinsic_vector_relational.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_gentype.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_half.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat2x2.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat2x3.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat2x4.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat3x2.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat3x3.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat3x4.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat4x2.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat4x3.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_mat4x4.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_vec.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_vec1.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_vec2.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_vec3.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\core\type_vec4.inl">
+      <Filter>Objects\Ocean\glm\core</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\half_float.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\matrix_access.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\matrix_inverse.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\matrix_transform.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\quaternion.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\swizzle.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\type_precision.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtc\type_ptr.inl">
+      <Filter>Objects\Ocean\glm\gtc</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\associated_min_max.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\bit.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\closest_point.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\color_cast.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\color_space.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\color_space_YCoCg.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\compatibility.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\component_wise.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\epsilon.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\euler_angles.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\extend.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\extented_min_max.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\fast_exponential.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\fast_square_root.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\fast_trigonometry.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\gradient_paint.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\handed_coordinate_space.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\inertia.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\int_10_10_10_2.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\integer.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\intersect.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\log_base.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\matrix_cross_product.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\matrix_interpolation.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\matrix_major_storage.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\matrix_operation.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\matrix_query.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\mixed_product.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\multiple.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\noise.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\norm.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\normal.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\normalize_dot.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\number_precision.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\ocl_type.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\optimum_pow.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\orthonormalize.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\perpendicular.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\polar_coordinates.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\projection.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\quaternion.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\random.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\raw_data.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\reciprocal.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\rotate_vector.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\simd_mat4.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\simd_vec4.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\simplex.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\spline.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\std_based_type.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\string_cast.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\transform.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\transform2.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\ulp.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\unsigned_int.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\vec1.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\vector_access.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\vector_angle.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\vector_query.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\verbose_operator.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+    <None Include="Objects\Ocean\glm\gtx\wrap.inl">
+      <Filter>Objects\Ocean\glm\gtx</Filter>
+    </None>
+  </ItemGroup>
+</Project>

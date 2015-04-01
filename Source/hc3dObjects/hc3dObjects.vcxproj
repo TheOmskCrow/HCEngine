@@ -1,0 +1,449 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8DFDB876-4FF8-47D4-889C-CD52F7E95783}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>hc3dObjects</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)x64\</OutDir>
+    <IntDir>$(Configuration)x64\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HC3D_EXPORTS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir) ; ../GL; ../hc3dMath; ../hc3dContentLoader; ../hc3dControllers; ../hc3dModelBuilder; ../hc3dSceneBuilder; ../hc3dPhysics; ../hc3dPhysics/Bullet</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs; $(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);hc3dMath.lib;hc3dContentLoader.lib;comsuppwd.lib;glew32.lib;hc3dControllers.lib;hc3dModelBuilder.lib; hc3dPhysics.lib; hc3dSceneBuilder.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;HC3D_EXPORTS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir) ; ../GL; ../hc3dMath; ../hc3dContentLoader; ../hc3dControllers; ../hc3dModelBuilder; ../hc3dSceneBuilder; ../hc3dPhysics; ../hc3dPhysics/Bullet</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs; $(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);hc3dMath.lib;hc3dContentLoader.lib;comsuppwd.lib;glew32.lib;hc3dControllers.lib;hc3dModelBuilder.lib; hc3dPhysics.lib; hc3dSceneBuilder.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;HC3D_EXPORTS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir) ; ../GL; ../hc3dMath; ../hc3dContentLoader; ../hc3dControllers; ../hc3dModelBuilder; ../hc3dSceneBuilder; ../hc3dPhysics; ../hc3dPhysics/Bullet</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs; $(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);hc3dControllers.lib;hc3dMath.lib;hc3dContentLoader.lib;comsuppw.lib;glew32.lib;hc3dModelBuilder.lib; hc3dPhysics.lib; hc3dSceneBuilder.lib</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;HC3D_EXPORTS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir) ; ../GL; ../hc3dMath; ../hc3dContentLoader; ../hc3dControllers; ../hc3dModelBuilder; ../hc3dSceneBuilder; ../hc3dPhysics; ../hc3dPhysics/Bullet</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Libs64; $(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);hc3dControllers.lib;hc3dMath.lib;hc3dContentLoader.lib;comsuppw.lib;glew32.lib;hc3dModelBuilder.lib; hc3dPhysics.lib; hc3dSceneBuilder.lib</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="Objects\Ocean\glm\CMakeLists.txt" />
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hc3dObjects.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Objects\Atmosphere\Atmosphere.h" />
+    <ClInclude Include="Objects\Butterfly\Butterfly.h" />
+    <ClInclude Include="Objects\Clouds\Clouds.h" />
+    <ClInclude Include="Objects\Fish\Fish.h" />
+    <ClInclude Include="Objects\GameWindow\GameWindow.h" />
+    <ClInclude Include="Objects\Grass\Grass.h" />
+    <ClInclude Include="Objects\Ocean\complex.h" />
+    <ClInclude Include="Objects\Ocean\fft.h" />
+    <ClInclude Include="Objects\Ocean\glhelper.h" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_common.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_exponential.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_geometric.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_integer.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_matrix.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_noise.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_packing.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_trigonometric.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\func_vector_relational.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\hint.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_common.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_exponential.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_geometric.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_matrix.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_trigonometric.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\intrinsic_vector_relational.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\setup.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_float.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_gentype.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_half.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_int.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat2x2.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat2x3.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat2x4.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat3x2.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat3x3.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat3x4.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat4x2.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat4x3.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_mat4x4.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_size.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec1.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec2.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec3.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\type_vec4.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\_detail.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\_fixes.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\core\_swizzle.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\ext.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\glm.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\half_float.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_access.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_integer.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_inverse.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\matrix_transform.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\quaternion.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\swizzle.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\type_precision.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtc\type_ptr.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\associated_min_max.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\bit.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\closest_point.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\color_cast.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\color_space.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\color_space_YCoCg.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\compatibility.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\component_wise.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\epsilon.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\euler_angles.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\extend.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\extented_min_max.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\fast_exponential.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\fast_square_root.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\fast_trigonometry.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\gradient_paint.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\handed_coordinate_space.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\inertia.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\integer.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\intersect.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\int_10_10_10_2.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\log_base.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_cross_product.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_interpolation.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_major_storage.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_operation.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\matrix_query.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\mixed_product.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\multiple.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\noise.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\norm.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\normal.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\normalize_dot.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\number_precision.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\ocl_type.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\optimum_pow.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\orthonormalize.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\perpendicular.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\polar_coordinates.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\projection.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\quaternion.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\random.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\raw_data.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\reciprocal.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\rotate_vector.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\simd_mat4.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\simd_vec4.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\simplex.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\spline.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\std_based_type.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\string_cast.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\transform.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\transform2.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\ulp.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\unsigned_int.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\vec1.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\vector_access.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\vector_angle.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\vector_query.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\verbose_operator.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\gtx\wrap.hpp" />
+    <ClInclude Include="Objects\Ocean\glm\virtrev\xstream.hpp" />
+    <ClInclude Include="Objects\Ocean\misc.h" />
+    <ClInclude Include="Objects\Ocean\Ocean.h" />
+    <ClInclude Include="Objects\Ocean\vector.h" />
+    <ClInclude Include="Objects\Star\Star.h" />
+    <ClInclude Include="Objects\Stone\Stone.h" />
+    <ClInclude Include="Objects\Terrain\Terrain.h" />
+    <ClInclude Include="Objects\Tree\Tree.h" />
+    <ClInclude Include="Objects\Water\Water.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="hc3dObjects.cpp" />
+    <ClCompile Include="Objects\Atmosphere\Atmosphere.cpp" />
+    <ClCompile Include="Objects\Butterfly\Butterfly.cpp" />
+    <ClCompile Include="Objects\Clouds\Clouds.cpp" />
+    <ClCompile Include="Objects\Fish\Fish.cpp" />
+    <ClCompile Include="Objects\GameWindow\GameWindow.cpp" />
+    <ClCompile Include="Objects\Grass\Grass.cpp" />
+    <ClCompile Include="Objects\Ocean\complex.cc" />
+    <ClCompile Include="Objects\Ocean\fft.cc" />
+    <ClCompile Include="Objects\Ocean\glhelper.cc" />
+    <ClCompile Include="Objects\Ocean\glm\core\dummy.cpp" />
+    <ClCompile Include="Objects\Ocean\misc.cc" />
+    <ClCompile Include="Objects\Ocean\Ocean.cpp" />
+    <ClCompile Include="Objects\Ocean\vector.cc" />
+    <ClCompile Include="Objects\Star\Star.cpp" />
+    <ClCompile Include="Objects\Stone\Stone.cpp" />
+    <ClCompile Include="Objects\Terrain\Terrain.cpp" />
+    <ClCompile Include="Objects\Tree\Tree.cpp" />
+    <ClCompile Include="Objects\Water\Water.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Objects\Ocean\glm\core\func_common.inl" />
+    <None Include="Objects\Ocean\glm\core\func_exponential.inl" />
+    <None Include="Objects\Ocean\glm\core\func_geometric.inl" />
+    <None Include="Objects\Ocean\glm\core\func_integer.inl" />
+    <None Include="Objects\Ocean\glm\core\func_matrix.inl" />
+    <None Include="Objects\Ocean\glm\core\func_noise.inl" />
+    <None Include="Objects\Ocean\glm\core\func_packing.inl" />
+    <None Include="Objects\Ocean\glm\core\func_trigonometric.inl" />
+    <None Include="Objects\Ocean\glm\core\func_vector_relational.inl" />
+    <None Include="Objects\Ocean\glm\core\intrinsic_common.inl" />
+    <None Include="Objects\Ocean\glm\core\intrinsic_exponential.inl" />
+    <None Include="Objects\Ocean\glm\core\intrinsic_geometric.inl" />
+    <None Include="Objects\Ocean\glm\core\intrinsic_matrix.inl" />
+    <None Include="Objects\Ocean\glm\core\intrinsic_trigonometric.inl" />
+    <None Include="Objects\Ocean\glm\core\intrinsic_vector_relational.inl" />
+    <None Include="Objects\Ocean\glm\core\type_gentype.inl" />
+    <None Include="Objects\Ocean\glm\core\type_half.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat2x2.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat2x3.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat2x4.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat3x2.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat3x3.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat3x4.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat4x2.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat4x3.inl" />
+    <None Include="Objects\Ocean\glm\core\type_mat4x4.inl" />
+    <None Include="Objects\Ocean\glm\core\type_vec.inl" />
+    <None Include="Objects\Ocean\glm\core\type_vec1.inl" />
+    <None Include="Objects\Ocean\glm\core\type_vec2.inl" />
+    <None Include="Objects\Ocean\glm\core\type_vec3.inl" />
+    <None Include="Objects\Ocean\glm\core\type_vec4.inl" />
+    <None Include="Objects\Ocean\glm\gtc\half_float.inl" />
+    <None Include="Objects\Ocean\glm\gtc\matrix_access.inl" />
+    <None Include="Objects\Ocean\glm\gtc\matrix_inverse.inl" />
+    <None Include="Objects\Ocean\glm\gtc\matrix_transform.inl" />
+    <None Include="Objects\Ocean\glm\gtc\quaternion.inl" />
+    <None Include="Objects\Ocean\glm\gtc\swizzle.inl" />
+    <None Include="Objects\Ocean\glm\gtc\type_precision.inl" />
+    <None Include="Objects\Ocean\glm\gtc\type_ptr.inl" />
+    <None Include="Objects\Ocean\glm\gtx\associated_min_max.inl" />
+    <None Include="Objects\Ocean\glm\gtx\bit.inl" />
+    <None Include="Objects\Ocean\glm\gtx\closest_point.inl" />
+    <None Include="Objects\Ocean\glm\gtx\color_cast.inl" />
+    <None Include="Objects\Ocean\glm\gtx\color_space.inl" />
+    <None Include="Objects\Ocean\glm\gtx\color_space_YCoCg.inl" />
+    <None Include="Objects\Ocean\glm\gtx\compatibility.inl" />
+    <None Include="Objects\Ocean\glm\gtx\component_wise.inl" />
+    <None Include="Objects\Ocean\glm\gtx\epsilon.inl" />
+    <None Include="Objects\Ocean\glm\gtx\euler_angles.inl" />
+    <None Include="Objects\Ocean\glm\gtx\extend.inl" />
+    <None Include="Objects\Ocean\glm\gtx\extented_min_max.inl" />
+    <None Include="Objects\Ocean\glm\gtx\fast_exponential.inl" />
+    <None Include="Objects\Ocean\glm\gtx\fast_square_root.inl" />
+    <None Include="Objects\Ocean\glm\gtx\fast_trigonometry.inl" />
+    <None Include="Objects\Ocean\glm\gtx\gradient_paint.inl" />
+    <None Include="Objects\Ocean\glm\gtx\handed_coordinate_space.inl" />
+    <None Include="Objects\Ocean\glm\gtx\inertia.inl" />
+    <None Include="Objects\Ocean\glm\gtx\integer.inl" />
+    <None Include="Objects\Ocean\glm\gtx\intersect.inl" />
+    <None Include="Objects\Ocean\glm\gtx\int_10_10_10_2.inl" />
+    <None Include="Objects\Ocean\glm\gtx\log_base.inl" />
+    <None Include="Objects\Ocean\glm\gtx\matrix_cross_product.inl" />
+    <None Include="Objects\Ocean\glm\gtx\matrix_interpolation.inl" />
+    <None Include="Objects\Ocean\glm\gtx\matrix_major_storage.inl" />
+    <None Include="Objects\Ocean\glm\gtx\matrix_operation.inl" />
+    <None Include="Objects\Ocean\glm\gtx\matrix_query.inl" />
+    <None Include="Objects\Ocean\glm\gtx\mixed_product.inl" />
+    <None Include="Objects\Ocean\glm\gtx\multiple.inl" />
+    <None Include="Objects\Ocean\glm\gtx\noise.inl" />
+    <None Include="Objects\Ocean\glm\gtx\norm.inl" />
+    <None Include="Objects\Ocean\glm\gtx\normal.inl" />
+    <None Include="Objects\Ocean\glm\gtx\normalize_dot.inl" />
+    <None Include="Objects\Ocean\glm\gtx\number_precision.inl" />
+    <None Include="Objects\Ocean\glm\gtx\ocl_type.inl" />
+    <None Include="Objects\Ocean\glm\gtx\optimum_pow.inl" />
+    <None Include="Objects\Ocean\glm\gtx\orthonormalize.inl" />
+    <None Include="Objects\Ocean\glm\gtx\perpendicular.inl" />
+    <None Include="Objects\Ocean\glm\gtx\polar_coordinates.inl" />
+    <None Include="Objects\Ocean\glm\gtx\projection.inl" />
+    <None Include="Objects\Ocean\glm\gtx\quaternion.inl" />
+    <None Include="Objects\Ocean\glm\gtx\random.inl" />
+    <None Include="Objects\Ocean\glm\gtx\raw_data.inl" />
+    <None Include="Objects\Ocean\glm\gtx\reciprocal.inl" />
+    <None Include="Objects\Ocean\glm\gtx\rotate_vector.inl" />
+    <None Include="Objects\Ocean\glm\gtx\simd_mat4.inl" />
+    <None Include="Objects\Ocean\glm\gtx\simd_vec4.inl" />
+    <None Include="Objects\Ocean\glm\gtx\simplex.inl" />
+    <None Include="Objects\Ocean\glm\gtx\spline.inl" />
+    <None Include="Objects\Ocean\glm\gtx\std_based_type.inl" />
+    <None Include="Objects\Ocean\glm\gtx\string_cast.inl" />
+    <None Include="Objects\Ocean\glm\gtx\transform.inl" />
+    <None Include="Objects\Ocean\glm\gtx\transform2.inl" />
+    <None Include="Objects\Ocean\glm\gtx\ulp.inl" />
+    <None Include="Objects\Ocean\glm\gtx\unsigned_int.inl" />
+    <None Include="Objects\Ocean\glm\gtx\vec1.inl" />
+    <None Include="Objects\Ocean\glm\gtx\vector_access.inl" />
+    <None Include="Objects\Ocean\glm\gtx\vector_angle.inl" />
+    <None Include="Objects\Ocean\glm\gtx\vector_query.inl" />
+    <None Include="Objects\Ocean\glm\gtx\verbose_operator.inl" />
+    <None Include="Objects\Ocean\glm\gtx\wrap.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
