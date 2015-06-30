@@ -10,6 +10,7 @@ using namespace hc3d;
 #define pi 3.1415
 Clouds::Clouds(void)
 {
+	layerHeight = 1000.0f;
 }
 
 
@@ -193,7 +194,7 @@ void Clouds::Init() {
 						Vector3D(vertex[(faces[i+6]-1)*3],vertex[(faces[i+6]-1)*3+1],vertex[(faces[i+6]-1)*3+2]))/3.0;
 		vert.x = vert.x * scale + 1000;
 		vert.y = vert.y * scale + 1000;
-		vert.z = vert.z * scale + 350;
+		vert.z = vert.z * scale + layerHeight;
 		list[i/9] = vert; 
 		normal[i/3] = n1;
 		normal[i/3+1] = n2;
@@ -240,7 +241,7 @@ void Clouds::setShader(Vector3D posit,float rad,int light){
 			glUniform1f(glGetUniformLocation(
 	        		shaderprogram, "rad"), 10000);
 	        glUniform3f(glGetUniformLocation(
-	        		shaderprogram, "center"), 0,0,400);
+				shaderprogram, "center"), 0, 0, layerHeight);
 			Vector3D eye = Camera::getPosition();
 			Vector3D sun = Info::GetSun();
 			glUniform3f(glGetUniformLocation(

@@ -11,21 +11,17 @@
 #include "Objects\Stone\Stone.h"
 #include "Objects\Fish\Fish.h"
 #include "Objects\Ocean\Ocean.h"
+#include "Objects\Plane\Plane.h"
 #include <hc3dMath.h>
 #include <map>
 
-typedef std::map<hc3d::Terrain*, hc3d::Vector3D> TerrainList;
 
 namespace hc3d {
-
-	class Terrains {
-	public: 
-		HC3D_API static TerrainList list;
-	};
-
 	HC3D_API Atmosphere* GetAtmo();
 
 	HC3D_API Terrain* GetTer(std::string mapName, Vector3D offset);
+
+	HC3D_API Terrains* GetTerrain();
 
 	HC3D_API Butterfly* GetBut();
 
@@ -34,6 +30,8 @@ namespace hc3d {
 	HC3D_API Clouds* GetClouds();
 
 	HC3D_API Tree* GetTrees();
+
+	HC3D_API Plane* GetPlane();
 
 	HC3D_API GameWindow* GetGameWindow();
 
@@ -51,13 +49,11 @@ namespace hc3d {
 
 	HC3D_API Vector3D CalcTerNormal(Vector3D position);
 
+	HC3D_API void AddTerrain(std::string path, Vector3D size, Vector3D location);
+
 	HC3D_API void SetGrassWind(float windWave, Vector3D windCenter);
 
 	HC3D_API void Reflect();
 
 	HC3D_API void Refract();
-
-	HC3D_API void SetRefract(bool);
-
-	HC3D_API void SetReflect(bool);
 }

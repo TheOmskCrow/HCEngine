@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <limits>
 #include "hc3dPhysics.h"
 #include "GLDebugDraw.h"
 #include "Control/Camera.h"
@@ -10,10 +11,13 @@
 
 #define PLAYER_MASS 80
 #define CUBE_HALF_EXTENTS 1
+#define LOOK_AT_QUEUE_SIZE 3
+#define MAX_ENGINE_FORCE 1000000
+#define MIN_ENGINE_FORCE 100000
 
 using namespace hc3d;
 
-
+std::vector<Vector3D> Collision::positionsC;
 btDefaultCollisionConfiguration* Collision::collisionConfiguration;
 btCollisionDispatcher* Collision::dispatcher;
 btBroadphaseInterface* Collision::overlappingPairCache;
@@ -31,41 +35,29 @@ btRaycastVehicle::btVehicleTuning Collision::m_tuning;
 btVehicleRaycaster* Collision::m_vehicleRayCaster;
 btRaycastVehicle* Collision::m_vehicle;
 btCollisionShape* Collision::m_wheelShape;
+int Collision::bindedObject = -1;
+btVector3 Collision::vehicleRotation(0, 0, 3.1415 / 2.0);
+bool Collision::vehicleLeft = false;
+bool Collision::vehicleRight = false;
+bool Collision::vehicleUp = false;
+bool Collision::vehicleDown = false;
 
-
-//   indexRightAxis = 0; 
-//   indexUpAxis = 2; 
-//   indexForwardAxis = 1; 
-const int maxProxies = 32766;
-const int maxOverlap = 65535;
-
-///btRaycastVehicle is the interface for the constraint that implements the raycast vehicle
-///notice that for higher-quality slow-moving vehicles, another approach might be better
-///implementing explicit hinged-wheel constraints with cylinder collision, rather then raycasts
-float   gEngineForce = 0.f;
-float   gBreakingForce = 0.f;
-
-float   maxEngineForce = 100000.f;//this should be engine/velocity dependent
-float   maxBreakingForce = 1000.f;
-
-float   gVehicleSteering = 0.f;
-float   steeringIncrement = 0.04f;
-float   steeringClamp = 0.3f;
-float   wheelRadius = 10.f;
-float   wheelWidth = 6.f;
-float   wheelFriction = 1000;//BT_LARGE_FLOAT;
-float   suspensionStiffness = 20.f;
-float   suspensionDamping = 2.3f;
-float   suspensionCompression = 4.4f;
-float   rollInfluence = 0.1f;//1.0f;
-int rightIndex = 0;
-int upIndex = 2;
-int forwardIndex = 1;
-float offsetZ = 300.0f;
+bool Collision::engineFront = false;
+bool Collision::engineBack = false;
+bool Collision::engineLeft = false;
+bool Collision::engineRight = false;
+std::queue<Vector3D> Collision::lookAtS;
+std::queue<Vector3D> Collision::rollByS;
+std::queue<Vector3D> Collision::positionS;
+float Collision::engineForce = 500000.0f;
 
 btVector3 wheelDirectionCS0(0, 0, -1);
 btVector3 wheelAxleCS(1, 0, 0);
 btScalar suspensionRestLength(0.6);
+int Collision::cadr = 0;
+clock_t Collision::startTime;
+float Collision::dist;
+btVector3 Collision::lastPos;
 
 TerrainHF::TerrainHF() {
 
@@ -102,6 +94,8 @@ float Collision::CalcTerrainHeight(size_t size, float **hmap, Vector3D pos) {
 }
 
 void Collision::DeleteTerrain(TerrainHF *terrain) {
+	if (terrain == nullptr) 
+		return;
 	dynamicsWorld->removeRigidBody(terrain->body);
 	delete terrain->body;
 	delete terrain->myMotionState;
@@ -110,19 +104,9 @@ void Collision::DeleteTerrain(TerrainHF *terrain) {
 	delete terrain;
 }
 
-TerrainHF * Collision::AddTerrain(int size, float** hmap, Vector3D offset) {
+TerrainHF * Collision::AddTerrain(int size, float* heightfield, Vector3D offset) {
 	TerrainHF *ter = new TerrainHF();
-	float *heightfield = new (float[size * size]);
 	ter->heightfield = heightfield;
-
-	int highest = -999999, j = 0;
-	for (int i = 0; i <= size; i++)
-		for (int j = 0; j <= size; j++) {
-			float z = CalcTerrainHeight(size, hmap, Vector3D(i * 2, j * 2, 0)) + 20.0;
-			heightfield[j * size + i] = z;
-			if (z > highest)
-			highest = z;
-	}
 
 	btHeightfieldTerrainShape* heightfieldShape = new btHeightfieldTerrainShape(size, size, heightfield, 1000, 2, true, false);
 	ter->heightfieldShape = heightfieldShape;
@@ -154,7 +138,6 @@ TerrainHF * Collision::AddTerrain(int size, float** hmap, Vector3D offset) {
 
 void Collision::Init() {
 	//Creating a static shape which will act as ground
-
 	collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new	btCollisionDispatcher(collisionConfiguration);
 	overlappingPairCache = new btDbvtBroadphase();
@@ -197,7 +180,7 @@ void Collision::Init() {
 		playerShape->calculateLocalInertia(pmass, plocalInertia);
 		btTransform playerTransform;
 		playerTransform.setIdentity();
-		playerTransform.setOrigin(btVector3(1000, 1000, 60));
+		playerTransform.setOrigin(btVector3(-1000, -1000, 310));
 
 		btDefaultMotionState* pMotionState = new btDefaultMotionState(playerTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
 		btRigidBody::btRigidBodyConstructionInfo prbInfo(pmass, pMotionState, playerShape, plocalInertia);
@@ -217,6 +200,28 @@ inline float distanceV3(Vector3D a, Vector3D b) {
 	c.y = (a.y - b.y);
 	c.z = (a.z - b.z);
 	return (float)sqrt((c.x *c.x + c.y*c.y + c.z*c.z));
+}
+
+std::vector<std::vector<float> > Collision::bt3x3ToVector(btMatrix3x3 R) {
+	auto row0 = R[0];
+	auto row1 = R[1];
+	auto row2 = R[2];
+	std::vector<float> row_0, row_1, row_2;
+	row_0.push_back(row0.x());
+	row_0.push_back(row0.y());
+	row_0.push_back(row0.z());
+
+	row_1.push_back(row1.x());
+	row_1.push_back(row1.y());
+	row_1.push_back(row1.z());
+
+	row_2.push_back(row2.x());
+	row_2.push_back(row2.y());
+	row_2.push_back(row2.z());
+
+	std::vector<std::vector<float> > res = { row_0, row_1, row_2 };
+
+	return res;
 }
 
 float Collision::_max(float a, float b) {
@@ -267,56 +272,6 @@ void Collision::AddVehicle() {
 
 	btDefaultMotionState* pMotionState = new btDefaultMotionState(playerTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
 	btRigidBody::btRigidBodyConstructionInfo prbInfo(pmass, pMotionState, chassisShape, plocalInertia);
-	m_carChassis = new btRigidBody(prbInfo);
-	m_carChassis->setActivationState(DISABLE_DEACTIVATION);
-
-	dynamicsWorld->addRigidBody(m_carChassis);
-	m_wheelShape = new btCylinderShapeX(btVector3(wheelWidth, wheelRadius, wheelRadius));
-
-	/// create vehicle
-	{
-		m_vehicleRayCaster = new btDefaultVehicleRaycaster(dynamicsWorld);
-		m_vehicle = new btRaycastVehicle(m_tuning, m_carChassis, m_vehicleRayCaster);
-		///never deactivate the vehicl
-		//m_vehicle->
-		dynamicsWorld->addVehicle(m_vehicle);
-		//dynamicsWorld->addAction(m_vehicle);
-
-		float connectionHeight = 0.0f;
-
-
-		bool isFrontWheel = true;
-
-		//choose coordinate system
-		m_vehicle->setCoordinateSystem(rightIndex, upIndex, forwardIndex);
-
-		btVector3 connectionPointCS0(CUBE_HALF_EXTENTS - 24, 2 * CUBE_HALF_EXTENTS - 24, connectionHeight);
-
-		m_vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, m_tuning, isFrontWheel);
-
-		connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS + 24, 2 * CUBE_HALF_EXTENTS - 24, connectionHeight);
-
-		m_vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, m_tuning, isFrontWheel);
-
-		connectionPointCS0 = btVector3(-CUBE_HALF_EXTENTS + 24, -2 * CUBE_HALF_EXTENTS + 24, connectionHeight);
-
-		isFrontWheel = false;
-		m_vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, m_tuning, isFrontWheel);
-
-		connectionPointCS0 = btVector3(CUBE_HALF_EXTENTS - 24, -2 * CUBE_HALF_EXTENTS + 24, connectionHeight);
-
-		m_vehicle->addWheel(connectionPointCS0, wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, m_tuning, isFrontWheel);
-
-		for (int i = 0; i<m_vehicle->getNumWheels(); i++)
-		{
-			btWheelInfo& wheel = m_vehicle->getWheelInfo(i);
-			wheel.m_suspensionStiffness = suspensionStiffness;
-			wheel.m_wheelsDampingRelaxation = suspensionDamping;
-			wheel.m_wheelsDampingCompression = suspensionCompression;
-			wheel.m_frictionSlip = wheelFriction;
-			wheel.m_rollInfluence = rollInfluence;
-		}
-	}
 }
 
 int Collision::AddBody(Vector3D size, Vector3D position, Vector3D rotation, btScalar mass, std::vector<Vector3D> vertexList, bool isStatic) {
@@ -415,7 +370,27 @@ void Collision::AddRigidBox(Vector3D size, Vector3D position, btScalar mass) {
 	dynamicsWorld->addRigidBody(body);
 }
 
+Vector3D Collision::VectorToEuler(Vector3D direction) {
+	float distance = sqrt(direction.x * direction.x + direction.y * direction.y);
+	float pitch = atan2(direction.z, distance);
+	float yaw = atan2(direction.x, -direction.y) - 3.1415 / 2.0;
+	return Vector3D(yaw, pitch, 0);
+}
+
+bool Collision::IsBinded() {
+	return bindedObject != -1;
+}
+
+Vector3D Collision::GetVehiclePosition() {
+	if (bindedObject != -1) {
+		auto position = objects[bindedObject]->getWorldTransform().getOrigin();
+		return Vector3D(position.x(), position.y(), position.z());
+	}
+	return Vector3D(0, 0, 0);
+}
+
 void Collision::ResolveCollision() {
+
 	btTransform startTransform;
 	startTransform.setIdentity();
 	startTransform.setOrigin(btVector3(Camera::getPosition().x, Camera::getPosition().y, Camera::getPosition().z - 2.0));
@@ -426,33 +401,126 @@ void Collision::ResolveCollision() {
 	}
 	mPlayerObject->setLinearVelocity(btVector3(Camera::GetSpeed().x, Camera::GetSpeed().y, zSpeed + jump));
 
-
-	int wheelIndex = 2;
-	m_vehicle->applyEngineForce(gEngineForce, wheelIndex);
-	m_vehicle->setBrake(gBreakingForce, wheelIndex);
-	wheelIndex = 3;
-	m_vehicle->applyEngineForce(gEngineForce, wheelIndex);
-	m_vehicle->setBrake(gBreakingForce, wheelIndex);
-
-	wheelIndex = 0;
-	m_vehicle->setSteeringValue(gVehicleSteering, wheelIndex);
-	wheelIndex = 1;
-	m_vehicle->setSteeringValue(gVehicleSteering, wheelIndex);
-
-
-	for (int i = 0; i < m_vehicle->getNumWheels(); i++)
-	{
-		//synchronize the wheels with the (interpolated) chassis worldtransform
-		m_vehicle->updateWheelTransform(i, true);
-	}
-
-
 	if (dynamicsWorld)//step the simulation
 		dynamicsWorld->stepSimulation(Info::GetElapsedTime());
 
+	/// Process vehicle
+	if (bindedObject != -1) {
+		objects[bindedObject]->setLinearVelocity(btVector3(0, 0, 0));
+		if (engineFront) engineForce += 5000.0f * Info::GetElapsedTime();
+		else if (engineBack) engineForce -= 5000.0f * Info::GetElapsedTime();
+
+		if (engineLeft) vehicleRotation.setZ(min(vehicleRotation.z() + 0.005 * Info::GetElapsedTime(), 0.05));
+		else if (engineRight) vehicleRotation.setZ(max(vehicleRotation.z() - 0.005 * Info::GetElapsedTime(), -0.05));
+
+		if (vehicleLeft) vehicleRotation.setY(min(vehicleRotation.y() + 0.04 * Info::GetElapsedTime(), 0.2));
+		else if (vehicleRight) vehicleRotation.setY(max(vehicleRotation.y() - 0.04 * Info::GetElapsedTime(), -0.2));
+		
+		if (vehicleUp) vehicleRotation.setX(min(vehicleRotation.x() + 0.02 * Info::GetElapsedTime(), 0.1));
+		else if (vehicleDown) vehicleRotation.setX(max(vehicleRotation.x() - 0.02 * Info::GetElapsedTime(), -0.1));
+
+	//	std::cout << vehicleRotation.x() << " " << vehicleRotation.y() << " " << vehicleRotation.z() << std::endl;
+		engineForce -= 500.0f * Info::GetElapsedTime();
+		engineForce = max(min(engineForce, MAX_ENGINE_FORCE), MIN_ENGINE_FORCE);
+
+		auto velocity = objects[bindedObject]->getAngularVelocity();
+		velocity.setX(max(min(velocity.x() / 1.1, 5.0), -5.0));
+		velocity.setY(max(min(velocity.y() / 1.1, 5.0), -5.0));
+		velocity.setZ(max(min(velocity.z() / 1.1, 5.0), -5.0));
+		objects[bindedObject]->setAngularVelocity(velocity);
+
+
+		btVector3 rotX(1, 0, 0);
+		btVector3 rotY(0, 1, 0);
+		btVector3 rotZ(0, 0, 1);
+
+		objects[bindedObject]->getWorldTransform().getOrigin();
+		btTransform Y(btQuaternion(rotY, vehicleRotation.y()), btVector3(0, 0, 0));
+		btTransform Z(btQuaternion(rotZ, vehicleRotation.z()), btVector3(0, 0, 0));
+		btTransform X(btQuaternion(rotX, vehicleRotation.x()), btVector3(0, 0, 0));
+		Y.mult(objects[bindedObject]->getWorldTransform(), Y);
+		Y.mult(Y, Z);
+		Y.mult(Y, X);
+		objects[bindedObject]->setWorldTransform(Y);
+
+		vehicleRotation.setX(vehicleRotation.x() / 1.3);
+		vehicleRotation.setY(vehicleRotation.y() / 1.3);
+		vehicleRotation.setZ(vehicleRotation.z() / 1.3);
+	}
+
 	//std::cout << gEngineForce << "" << std::endl;
-	btVector3 newPosition = mPlayerObject->getWorldTransform().getOrigin();
-	Camera::setPosition(Vector3D(newPosition.x(), newPosition.y(), newPosition.z() + 1));
+	btVector3 newPosition;
+	if (bindedObject == -1) newPosition = mPlayerObject->getWorldTransform().getOrigin();
+	else {
+
+		auto orientationMat = objects[bindedObject]->getWorldTransform().getBasis().inverse();
+		
+		auto row1 = orientationMat[0];
+		auto row2 = orientationMat[1];
+		auto row3 = orientationMat[2];
+		
+		//auto Euler = MatrixToEuler(bt3x3ToVector(objects[bindedObject]->getWorldTransform().getBasis().inverse()));
+		//QuaternionToEulerXYZ(objects[bindedObject]->getWorldTransform().getRotation(), Euler);
+
+		Vector3D A = Vector3D(0,20,10);
+		Vector3D lookAt = Vector3D(0, -10, 5);
+		Vector3D goTo = Vector3D(0, -engineForce, 0);
+		Vector3D rollBy = Vector3D(0, 0, 1);
+		Matrix4x4 matz;
+		matz.set(row1.x(), row1.y(), row1.z(), 0,
+			row2.x(), row2.y(), row2.z(), 0,
+			row3.x(), row3.y(), row3.z(), 0,
+			0, 0, 0, 1);
+			
+		A = matz.mult(A);
+		lookAt = matz.mult(lookAt);
+		rollBy = matz.mult(rollBy);
+		goTo = matz.mult(goTo);
+		//A = matx.mult(A);
+		//A = matz.mult(A);
+		
+		newPosition = objects[bindedObject]->getWorldTransform().getOrigin();
+		objects[bindedObject]->applyCentralImpulse(btVector3(goTo.x, goTo.y, goTo.z));
+		lookAt += Vector3D(newPosition.x(), newPosition.y(), newPosition.z());
+		newPosition.setX(newPosition.x() + A.x);
+		newPosition.setY(newPosition.y() + A.y);
+		newPosition.setZ(newPosition.z() + A.z);
+
+		if (!lookAtS.size()) {
+			for (int i = 0; i < LOOK_AT_QUEUE_SIZE; i++) {
+				lookAtS.push(lookAt * float(i) / (float)LOOK_AT_QUEUE_SIZE);
+				rollByS.push(rollBy * float(i) / (float)LOOK_AT_QUEUE_SIZE);
+				positionS.push(Vector3D(newPosition.x(), newPosition.y(), newPosition.z()));
+			}
+		}
+		lookAtS.push(lookAt);
+		lookAt = lookAtS.front();
+		lookAtS.pop();
+
+		
+		rollByS.push(rollBy);
+		rollBy = rollByS.front();
+		rollByS.pop();
+
+		positionS.push(Vector3D(newPosition.x(), newPosition.y(), newPosition.z()));
+		newPosition.setX(positionS.front().x);
+		newPosition.setY(positionS.front().y);
+		newPosition.setZ(positionS.front().z);
+		positionS.pop();
+
+		auto direction = lookAt - Vector3D(newPosition.x(), newPosition.y(), newPosition.z());
+		auto Euler = VectorToEuler(direction);
+		Camera::SetLookAt(lookAt);
+		Camera::SetRollBy(rollBy);
+		//std::cout << Euler.x << " " << Euler.y << " " << Euler.z << " " << std::endl;
+		Camera::SetEuler(Euler.x, Euler.y, Euler.z);
+	}
+	Camera::setPosition(Vector3D(newPosition.x(), newPosition.y(), newPosition.z()));
+	
+}
+
+void Collision::BindCamera(int objectID) {
+	bindedObject = objectID;
 }
 
 void Collision::QuaternionToEulerXYZ(const btQuaternion &quat, btVector3 &euler)
@@ -462,6 +530,48 @@ void Collision::QuaternionToEulerXYZ(const btQuaternion &quat, btVector3 &euler)
 	euler.setZ((atan2(2.0 * (x*y + z*w), (sqx - sqy - sqz + sqw))));
 	euler.setX((atan2(2.0 * (y*z + x*w), (-sqx - sqy + sqz + sqw))));
 	euler.setY((asin(-2.0 * (x*z - y*w))));
+}
+
+
+
+const float PI = 3.14159265358979323846264f;
+
+bool closeEnough(const float& a, const float& b, const float& epsilon = std::numeric_limits<float>::epsilon()) {
+	return (epsilon > std::abs(a - b));
+}
+
+Vector3D Collision::MatrixToEuler(const std::vector<std::vector<float> >& R) {
+
+	//check for gimbal lock
+	if (closeEnough(R[0][2], -1.0f)) {
+		float x = 0; //gimbal lock, value of x doesn't matter
+		float y = PI / 2;
+		float z = x + atan2(R[1][0], R[2][0]);
+		return Vector3D(x, y, z);
+	}
+	else if (closeEnough(R[0][2], 1.0f)) {
+		float x = 0;
+		float y = -PI / 2;
+		float z = -x + atan2(-R[1][0], -R[2][0]);
+		return Vector3D(x, y, z);
+	}
+	else { //two solutions exist
+		float x1 = -asin(R[0][2]);
+		float x2 = PI - x1;
+
+		float y1 = atan2(R[1][2] / cos(x1), R[2][2] / cos(x1));
+		float y2 = atan2(R[1][2] / cos(x2), R[2][2] / cos(x2));
+
+		float z1 = atan2(R[0][1] / cos(x1), R[0][0] / cos(x1));
+		float z2 = atan2(R[0][1] / cos(x2), R[0][0] / cos(x2));
+
+		//choose one solution to return
+		//for example the "shortest" rotation
+		if ((std::abs(x1) + std::abs(y1) + std::abs(z1)) <= (std::abs(x2) + std::abs(y2) + std::abs(z2))) {
+			return Vector3D(x1, y1, z1);
+		}
+		else return Vector3D(x2, y2, z2);
+	}
 }
 
 btScalar* Collision::GetObjectMatrix(int i) {
@@ -476,19 +586,80 @@ btScalar* Collision::GetObjectMatrix(int i) {
 	return m;
 }
 
+void Collision::CRelease() {
+	FILE* fileId;
+	fopen_s(&fileId, "checkpoints.txt", "w");
+	if (!fileId) return;
+	for (size_t i = 0; i < positionsC.size(); i++) {
+		fprintf(fileId, "%f %f %f\n", positionsC[i].x, positionsC[i].y, positionsC[i].z);
+	}
+	fclose(fileId);
+}
+
+void Collision::Keyboard(int key, int x, int y) {
+	if (key == 'q' || key == 'Q') exit(0);
+	if (key == 'w' || key == 'W') {
+		if (!engineBack) engineFront = true;
+	}
+	else if (key == 's' || key == 'S') {
+		if (!engineFront) engineBack = true;
+	}
+	else if (key == 'a' || key == 'A') {
+		if (!engineRight) engineLeft = true;
+	}
+	else if (key == 'd' || key == 'D') {
+		if (!engineLeft) engineRight = true;
+	}
+	else if (key == 'r' || key == 'R') {
+		if (!Info::IsRunned()) Info::StartRound();
+		else Info::EndRound(false);
+	}
+	else if (key == ' ' || key == 'f' || key == 'F') {
+		auto tmp = objects[bindedObject]->getWorldTransform().getOrigin();
+		positionsC.push_back(Vector3D(tmp.x(), tmp.y(), tmp.z()));
+		CRelease();
+	}
+
+}
+
+void Collision::KeyboardUp(int key, int x, int y) {
+	if (key == 'w' || key == 'W') {
+		engineFront = false;
+	}
+	else if (key == 's' || key == 'S') {
+		engineBack = false;
+	}
+	else if (key == 'a' || key == 'A') {
+		engineLeft = false;
+	}
+	else if (key == 'd' || key == 'D') {
+		engineRight = false;
+	}
+}
+
 void Collision::specialKeyboardUp(int key, int x, int y)
-{
+{	
 	switch (key)
 	{
 	case GLUT_KEY_UP:
 	{
-						gEngineForce = 0.f;
-						break;
+		vehicleUp = false;
+		break;
 	}
 	case GLUT_KEY_DOWN:
 	{
-						  gBreakingForce = 0.f;
-						  break;
+		vehicleDown = false;
+		break;
+	}
+	case GLUT_KEY_LEFT:
+	{
+		vehicleLeft = false;
+		break;
+	}
+	case GLUT_KEY_RIGHT:
+	{
+		vehicleRight = false;
+		break;
 	}
 	default:
 		break;
@@ -496,44 +667,48 @@ void Collision::specialKeyboardUp(int key, int x, int y)
 
 }
 
+btVector3 control(btVector3 in)
+{
+	// play around with the factor until you find a matching one
+	static int Kp = 0.5;
+	return in * Kp;
+}
 
 void Collision::specialKeyboard(int key, int x, int y)
 {
 
 	//      printf("key = %i x=%i y=%i\n",key,x,y);
+	if (bindedObject != -1) {
+		switch (key)
+		{
+		case GLUT_KEY_LEFT:
+		{
+			if (!vehicleRight)
+			vehicleLeft = true;
+			break;
+		}
+		case GLUT_KEY_RIGHT:
+		{
+			if (!vehicleLeft)
+			vehicleRight = true;
+			break; 
+		}
+		case GLUT_KEY_UP:
+		{
+			if (!vehicleDown)
+			vehicleUp = true;
+			break;
+		}
+		case GLUT_KEY_DOWN:
+		{
 
-	switch (key)
-	{
-	case GLUT_KEY_LEFT:
-	{
-						  gVehicleSteering += steeringIncrement;
-						  if (gVehicleSteering > steeringClamp)
-							  gVehicleSteering = steeringClamp;
-
-						  break;
-	}
-	case GLUT_KEY_RIGHT:
-	{
-						   gVehicleSteering -= steeringIncrement;
-						   if (gVehicleSteering < -steeringClamp)
-							   gVehicleSteering = -steeringClamp;
-
-						   break;
-	}
-	case GLUT_KEY_UP:
-	{
-						gEngineForce = maxEngineForce;
-						gBreakingForce = 0.f;
-						break;
-	}
-	case GLUT_KEY_DOWN:
-	{
-						  gBreakingForce = maxBreakingForce;
-						  gEngineForce = 0.f;
-						  break;
-	}
-	default:
-		break;
+			if (!vehicleUp)
+			vehicleDown = true;
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
 	//      glutPostRedisplay();

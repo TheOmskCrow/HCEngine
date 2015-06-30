@@ -79,7 +79,7 @@ void Tree::Init(){
 		leafDist.push_back(400);
 		model[3].AddLodModels(leafNames, leafDist);
 		
-        Tree_num = 300;
+        Tree_num = 30000;
         offset = 0.0;
         tree = new Vector3D[Tree_num];
 		angle = new float[Tree_num];
@@ -111,8 +111,8 @@ void Tree::Tree_init(){
         for(int i = 0; i < Tree_num; i++) {
 			while(1) {
             Vector3D data;
-            data.x = ((rand()%40900)/10.0);
-            data.y = ((rand()%40900)/10.0);
+			data.x = float(rand()) * float(rand() % 10 + 1);
+			data.y = float(rand()) * float(rand() % 10 + 1);
 			data.z = CalcTerHeight(Vector3D(data.x,data.y,0.0));
 			float Tree_coeff = hc3d::Math::hc3dMax(0.0, hc3d::Math::hc3dMin(1.0, (CalcTerNormal(Vector3D(data.x, data.y, 0.0))*Vector3D(0.0, 0.0, 1.0))));
 			Tree_coeff -= 0.975;
@@ -127,18 +127,31 @@ void Tree::Tree_init(){
 			if(type[i] == 1) {
 				gr_size[i] *= 1.6;
 			}
-			if(data.z < 100.0 && data.z > 3.0 && (distance(Vector3D(3000,2000,0),tree[i]) < 500 || distance(Vector3D(1600,2500,0),tree[i]) < 600)) {
+			if (data.z < 100.0 && data.z > 3.0/* && (distance(Vector3D(3000, 2000, 0), tree[i]) < 500 ||
+				distance(Vector3D(1600, 2500, 0), tree[i]) < 600
+				|| distance(Vector3D(5000, 2000, 0), tree[i]) < 1000
+				|| distance(Vector3D(3000, 6000, 0), tree[i]) < 500
+				|| distance(Vector3D(6000, 12000, 0), tree[i]) < 1000
+				|| distance(Vector3D(8000, 10000, 0), tree[i]) < 1000
+				|| distance(Vector3D(4000, 9000, 0), tree[i]) < 1000
+				|| distance(Vector3D(7000, 6000, 0), tree[i]) < 1000
+				|| distance(Vector3D(10000, 1000, 0), tree[i]) < 1000
+				|| distance(Vector3D(12000, 8000, 0), tree[i]) < 1000
+				|| distance(Vector3D(6000, 4000, 0), tree[i]) < 1000
+				|| distance(Vector3D(3000, 7000, 0), tree[i]) < 1000
+				|| distance(Vector3D(9000, 13000, 0), tree[i]) < 1000)*/) {
 				bool flag = true;
 				for(int j = 0; j < i; j++) {
 					if(distance(tree[j],tree[i]) < 1.0) flag = false;
 				}
-				if (flag) {
+			/*	if (flag) {
 					if (type[i] == 2) model[2].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
 					else if (type[i] == 0) model[0].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
 					else if (type[i] == 1) model[1].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
 					
-					break;
-				}
+					
+				}*/
+				break;
 			}
 			}
         }
@@ -227,7 +240,7 @@ void Tree::setShader(int shad) {
 void Tree::Draw() {
 	float yaw = 0;
 	float pitch = 0;
-	if (!Info::GetShader() || Terrain::refract || Terrain::reflect) yaw = 1;
+	if (!Info::GetShader() || Info::GetRefract() || Info::GetReflect()) yaw = 1;
 	pos = Camera::getPosition();
 	// tree = qSort(tree,0,Tree_num-1);
 	if (Info::GetShader()) {
@@ -236,7 +249,7 @@ void Tree::Draw() {
 	}
 	bool tmp = Info::GetShader();
 	Info::SetShader(false);
-	if (yaw == 0 && !Terrain::refract && !Terrain::reflect) offset += (rnd() / 5.0 + 0.05)*Info::GetElapsedTime();
+	if (yaw == 0 && !Info::GetRefract() && !Info::GetReflect()) offset += (rnd() / 5.0 + 0.05)*Info::GetElapsedTime();
 	float pi = 3.141592;
 	Vector3D player = Camera::getPosition();
 	int samples = 0;
@@ -244,13 +257,13 @@ void Tree::Draw() {
 	for (int i = 0; i < Tree_num; i++) {
 		float dst = distance(tree[i], player);
 		if (yaw == 0.0 && dst > 2500.0) continue;
-		else if (yaw != 0.0 && dst > 120.0) continue;
+		else if (yaw != 0.0 && dst > Info::GetShadowDist()) continue;
 		Vector3D a = tree[i] - Camera::getPosition();
 		a.Normalize();
 		Vector3D b = Info::GetEyeNormal();
 		b.Normalize();
-		Vector2D _a(a.x, a.y);
-		Vector2D _b(b.x, b.y);
+		Vector3D _a = a;
+		Vector3D _b = b;
 		_a.Normalize();
 		_b.Normalize();
 		float norm_vec = _a*_b;
@@ -309,12 +322,12 @@ void Tree::Draw() {
 		a.Normalize();
 		Vector3D b = Info::GetEyeNormal();
 		b.Normalize();
-		Vector2D _a(a.x, a.y);
-		Vector2D _b(b.x, b.y);
+		Vector3D _a = a;
+		Vector3D _b = b;
 		_a.Normalize();
 		_b.Normalize();
 		float norm_vec = _a*_b;
-		if (norm_vec < 0.6 && dst > 100.0) continue;
+		if (yaw == 0.0) if (norm_vec < 0.6 && dst > 150.0) continue;
 
 
 		float size = 1.5;

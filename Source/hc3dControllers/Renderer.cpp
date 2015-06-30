@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#define MAX_MATERIALS 8
+#define MAX_MATERIALS 16
 using namespace hc3d;
 
 std::vector<Material> Renderer::materials;
@@ -8,6 +8,10 @@ GLuint Renderer::shaderprogram = 0;
 
 void Renderer::SetShader(GLuint shaderprogram) {
 	Renderer::shaderprogram = shaderprogram;
+}
+
+void Renderer::SetShader(const char* name) {
+	ShaderLib::Get(name, Renderer::shaderprogram);
 }
 
 bool Renderer::UseMaterial(Material& data) {
@@ -40,6 +44,8 @@ void Renderer::SendMaterials() {
 	GLfloat* parallaxOffset = new float[materials.size()];
 	GLfloat* specPow = new float[materials.size()];
 	GLfloat* specVal = new float[materials.size()];
+	GLfloat* farColor = new float[materials.size() * 3];
+	GLfloat* farDist = new float[materials.size()];
 	int* ambientType = new int[materials.size()];
 
 	int *_useDiffuse = new int[materials.size()];
@@ -57,6 +63,10 @@ void Renderer::SendMaterials() {
 			glActiveTexture(GL_TEXTURE0 + materials[i].diffuseMap);
 			glBindTexture(GL_TEXTURE_2D, materials[i].diffuseMap);
 			diffuseSamplers[i] = materials[i].diffuseMap;
+			farColor[i * 3] = materials[i].diffuseFarColor.x;
+			farColor[i * 3 + 1] = materials[i].diffuseFarColor.y;
+			farColor[i * 3 + 2] = materials[i].diffuseFarColor.z;
+			farDist[i] = materials[i].diffuseFarDist;
 		}
 
 		if (_useHeight[i]) {
@@ -100,6 +110,10 @@ void Renderer::SendMaterials() {
 		shaderprogram, "specPow"), materials.size(), specPow);
 	glUniform1fv(glGetUniformLocation(
 		shaderprogram, "specVal"), materials.size(), specVal);
+	glUniform3fv(glGetUniformLocation(
+		shaderprogram, "farColor"), materials.size(), farColor);
+	glUniform1fv(glGetUniformLocation(
+		shaderprogram, "farDist"), materials.size(), farDist);
 	glUniform1iv(glGetUniformLocation(
 		shaderprogram, "ambientType"), materials.size(), ambientType);
 
@@ -114,6 +128,29 @@ void Renderer::SendMaterials() {
 	glUniform1i(glGetUniformLocation(
 		shaderprogram, "materialNum"), materials.size());
 
+	/// other must be parameters
+
+	glUniform1f(glGetUniformLocation(
+		shaderprogram, "time"), (Info::getTime() / 100.0)); 
+	glUniform1f(glGetUniformLocation(
+		shaderprogram, "Width"), Info::width());//screen width
+	glUniform1f(glGetUniformLocation(
+		shaderprogram, "Height"), Info::height());//screen height
+	glUniform3f(glGetUniformLocation(
+		shaderprogram, "eyeNorm"), Info::GetEyeNormal().x, Info::GetEyeNormal().y, Info::GetEyeNormal().z);
+	glUniform3f(glGetUniformLocation(
+		shaderprogram, "eyePos"), Camera::getPosition().x, Camera::getPosition().y, Camera::getPosition().z);
+	glUniform3f(glGetUniformLocation(
+		shaderprogram, "atmosphere"), Info::GetAtmoColor().x, Info::GetAtmoColor().y, Info::GetAtmoColor().z); //atmo color
+	if (Info::GetReflect())
+		glUniform3f(glGetUniformLocation(
+		shaderprogram, "lightPos"), Info::GetSun().x, Info::GetSun().y, -Info::GetSun().z); //sun pos
+	else
+		glUniform3f(glGetUniformLocation(
+		shaderprogram, "lightPos"), Info::GetSun().x, Info::GetSun().y, Info::GetSun().z);
+	glUniform1i(glGetUniformLocation(
+		shaderprogram, "flash"), Info::GetFlash()); //flashlight enable
+
 	delete[] diffuseSamplers;
 	delete[] heightSamplers;
 	delete[] normalSamplers;
@@ -127,6 +164,9 @@ void Renderer::SendMaterials() {
 	delete[] _useHeight;
 	delete[] _useNormal;
 	delete[] _useSpecular;
+	delete[] farColor;
+	delete[] farDist;
+
 }
 
 void Renderer::DropSettings() {

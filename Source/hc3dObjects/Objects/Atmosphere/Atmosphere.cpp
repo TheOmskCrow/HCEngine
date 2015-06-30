@@ -259,7 +259,7 @@ void Atmosphere::Draw(){
 	
 	 void Atmosphere::SetShader(GLuint shaderprogram){
 			Vector3D position = Camera::getPosition();
-			if(Terrain::reflect) position.z *= -1.0;
+			if(Info::GetReflect()) position.z *= -1.0;
 	        glUniform1f(glGetUniformLocation(
 	        		shaderprogram, "poz"), position.z);
 	        glUniform3f(glGetUniformLocation(
@@ -272,7 +272,7 @@ void Atmosphere::Draw(){
 			glUniform3f(glGetUniformLocation(
 				shaderprogram, "light"), light.x,light.y,light.z);
 			int refl = 0;
-			if(Terrain::reflect) refl = 1;
+			if (Info::GetReflect()) refl = 1;
 			glUniform1i(glGetUniformLocation(
 				shaderprogram, "reflection"), refl);
 	 }

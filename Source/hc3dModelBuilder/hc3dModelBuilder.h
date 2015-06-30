@@ -16,6 +16,9 @@
 #include <hc3dMath.h>
 #include <hc3dContentLoader.h>
 #include <hc3dPhysics.h>
+#include <cstdlib>
+#include <math.h>
+#include <map>
 
 namespace hc3d {
 
@@ -34,11 +37,15 @@ namespace hc3d {
 		void AddHitBoxModel(const char* name);
 		void AddModelMass(float mass);
 		void AddLodModels(std::vector<std::string> names, std::vector<float> distance);
+		void AddState(std::string name, int num);
+		void SetState(int state, float changeTime);
 		void draw(float distance = 0.0f);
 		void CompileLod(int i);
 		void no_shaders();
 		void enable_spec();
 		void setScale(float);
+		void setScaleTexCoord(Vector2D);
+		void setScaleTexCoord(float, float);
 		void setScaleTexCoord(float);
 	private:
 		int list_id;
@@ -52,9 +59,22 @@ namespace hc3d {
 		int **lodFaces;
 		int *lodFacesSize;
 		float* lodDistance;
+
+		std::vector<float *> stateVertex;
+		std::vector<float *> stateNormal;
+		std::vector<float *> stateTexCoord;
+		std::vector<int *> stateFaces;
+		std::vector<int> stateFacesSize;
+		std::map<int, int> stateNum;
+
 		int* lodLists;
 		int lodNum;
+		int state;
+		int prevState;
+
 		float mass;
+		float changeTimeRemaining;
+		float changeTimeAll;
 
 		float *vertex; int vertex_size;
 		float *vertex_n; int vertex_n_size;
@@ -64,7 +84,8 @@ namespace hc3d {
 		float *collisionVertex;
 		int *collisionFaces;
 		int collisionFacesNum;
-		float _mdl_x, _mdl_y, _mdl_z, level, texCoordScale;
+		float _mdl_x, _mdl_y, _mdl_z, level;
+		Vector2D texCoordScale;
 		GLuint *texture;
 		GLuint shaderProgram;
 		Vector3D mdl_pos;
@@ -74,5 +95,6 @@ namespace hc3d {
 
 	};
 }
+
 
 

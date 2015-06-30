@@ -6,17 +6,23 @@ namespace hc3d {
 	{
 	public: //public methods
 		Terrain(std::string mapName, Vector3D offset);
-		void Init();
+		void Init(); //just overload
+		void InitMaterials();
+		HANDLE InitHM(); // heightmap init
+		HANDLE InitCollision(); // heightmap init
 		void Draw();
-		void shadow_shot(int);
 		void setShader();
 		float calc_height(Vector3D);
 		Vector3D calc_normal(Vector3D);
 		static GLuint get_shaderprogram();
-		bool Loaded() { return loaded; }
-		void Load();
+		bool Loaded() { return loadedHM; }
+		bool Busy() { return busy; }
+
+		void Process();
+		
 
 	public: // public fields
+		int state;
 		int list_id;
 		int LoD;
 		float **hmap;
@@ -27,18 +33,23 @@ namespace hc3d {
 
 	public: // static public fields
 		static int dimension;
-		static bool reflect;
-		static bool refract;
-		static GLuint *texture;
 
 	private: //private methods
+		HANDLE RunMultiThreadTask();
 		inline bool Visible();
+		inline bool Accessible();
 		float dist(Vector3D a, Vector3D b);
 		float dot(Vector3D a, Vector3D b);
-		void Delete();
+		
 		void LodGenerate(int num, int level);
 		void CenterGenerate(int num);
 		void InitCache(std::string normalMapName, std::string heightMapName);
+
+		void LoadHM();
+		void LoadCollision();
+		void DeleteHM();
+		void DeleteCollision();
+
 
 	private: //private fields
 		int **static_lists;
@@ -51,13 +62,28 @@ namespace hc3d {
 		std::string mapName;
 		Vector3D offset;
 		bool exploded;
-		bool loaded;
-		bool loading;
+		bool loadedHM;
+		bool loadedCol;
+		bool busy;
 		size_t listNum;
 
 	private://static fields
-		static GLuint shaderprogram;
 		static GLuint *caust;
+	};
+
+	typedef std::vector<std::pair<hc3d::Terrain*, hc3d::Vector3D> > TerrainList;
+
+	class Terrains : public Object
+	{
+	public:
+		Terrains();
+		void Init();
+		void Draw();
+		static void AddTerrain(std::string path, Vector3D size, Vector3D location);
+
+	public:
+		static TerrainList list;
+		bool wait;
 	};
 
 }

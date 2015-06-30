@@ -187,9 +187,13 @@ void Water::LodGenerate(int num, int level) {
 		j_end = hc3d::Math::hc3dMin(2048 - int(pow(2.0, level)), j_end + level);
 	}
 
+	i_start += Camera::getPosition().x;
+	i_end += Camera::getPosition().x;
+	j_start += Camera::getPosition().y;
+	j_end += Camera::getPosition().y;
 	int size = 2; // make class variable
-	static_lists[num][level] = glGenLists(1);
-	glNewList(static_lists[num][level], GL_COMPILE);
+//	static_lists[num][level] = glGenLists(1);
+//	glNewList(static_lists[num][level], GL_COMPILE);
 	level = int(pow(2.0, level));
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
@@ -289,7 +293,158 @@ void Water::LodGenerate(int num, int level) {
 	}
 	glEnd();
 	glDisable(GL_DEPTH_TEST);
-	glEndList();
+//	glEndList();
+	glPopMatrix();
+}
+
+void Water::DrawMain() {
+	glPushMatrix();
+	glLoadIdentity();
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glBegin(GL_TRIANGLES);
+
+	
+	int polyNum = 8;
+	int majorPolyNum = 32;
+	int level = 8;
+	int majorPoly = polyNum * level * 2;
+	Vector3D offset = Vector3D(((int)Camera::getPosition().x / level) * level, ((int)Camera::getPosition().y / level) * level, ((int)Camera::getPosition().z / level) * level);
+
+	int i_start = -polyNum * level + offset.x;
+	int i_end = polyNum * level + offset.x;
+	int j_start = -polyNum * level + offset.y;
+	int j_end = polyNum * level + offset.y;
+
+	int im_start = -majorPolyNum * majorPoly + i_start;
+	int im_end = majorPolyNum * majorPoly + i_end;
+	int jm_start = -majorPolyNum * majorPoly + j_start;
+	int jm_end = majorPolyNum * majorPoly + j_end;
+	float hei;
+	
+	for (int i = i_start; i < i_end; i += level) {
+		for (int j = j_start; j < j_end; j += level) {
+			const float xy0 = CalcTerHeight(Vector3D(i, j, 0));
+
+			hei = xy0 / 100.0;
+			glNormal3f(0, 1.0, hei);//this is not really normal. just using attribute
+			glTexCoord2d(i, j);
+			glVertex3f(i, j, 0);
+
+			const float xPolY0 = CalcTerHeight(Vector3D(i + level, j, 0)) / 100.0;
+			const float xYPol0 = CalcTerHeight(Vector3D(i, j + level, 0)) / 100.0;
+			const float xPolYPol0 = CalcTerHeight(Vector3D(i + level, j + level, 0)) / 100.0;
+
+			glNormal3f(0, 1.0, xPolY0);
+			glTexCoord2d(i + level, j);
+			glVertex3f(i + level, j, 0);
+
+			glNormal3f(0, 1.0, xYPol0);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, 1.0, xYPol0);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, 1.0, xPolY0);
+			glTexCoord2d((i + level), j);
+			glVertex3f(i + level, j, 0);
+
+			glNormal3f(0, 1.0, xPolYPol0);
+			glTexCoord2d((i + level), (j + level));
+			glVertex3f(i + level, j + level, 0);
+
+			// back
+
+
+			glNormal3f(0, -1.0, xy0 / 100.0);
+			glTexCoord2d(i, j);
+			glVertex3f(i, j, 0);
+
+			glNormal3f(0, -1.0, xYPol0);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, -1.0, xPolY0);
+			glTexCoord2d(i + level, j);
+			glVertex3f(i + level, j, 0);
+
+			glNormal3f(0, -1.0, xYPol0);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, -1.0, xPolYPol0);
+			glTexCoord2d((i + level), (j + level));
+			glVertex3f(i + level, j + level, 0);
+
+			glNormal3f(0, -1.0, xPolY0);
+			glTexCoord2d((i + level), j);
+			glVertex3f(i + level, j, 0);
+		}
+	}
+	//majorPoly
+	level = majorPoly;
+	for (int i = im_start; i < im_end; i += majorPoly) {
+		for (int j = jm_start; j < jm_end; j += majorPoly) {
+
+			if (i >= i_start && i < i_end && j >= j_start && j < j_end) continue;
+			hei = -0.1;
+			glNormal3f(0, 1.0, hei);//this is not really normal. just using attribute
+			glTexCoord2d(i, j);
+			glVertex3f(i, j, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d(i + level, j);
+			glVertex3f(i + level, j, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d((i + level), j);
+			glVertex3f(i + level, j, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d((i + level), (j + level));
+			glVertex3f(i + level, j + level, 0);
+
+			// back
+
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d(i, j);
+			glVertex3f(i, j, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d(i + level, j);
+			glVertex3f(i + level, j, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d(i, (j + level));
+			glVertex3f(i, j + level, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d((i + level), (j + level));
+			glVertex3f(i + level, j + level, 0);
+
+			glNormal3f(0, 1.0, hei);
+			glTexCoord2d((i + level), j);
+			glVertex3f(i + level, j, 0);
+		}
+	}
+	
+	glEnd();
+	glDisable(GL_DEPTH_TEST);
 	glPopMatrix();
 }
 
@@ -310,100 +465,7 @@ void Water::Draw() {
 
 	glUseProgram(shaderprogram);
 	setShader();
-	for (int i = 0; i < 1024; i++) {
-
-		float dst = dist(Camera::getPosition(), list_center[i]);
-		Vector3D a = list_center[i] - Camera::getPosition();
-		a.Normalize();
-		Vector3D b = Info::GetEyeNormal();
-		b.Normalize();
-		float norm_vec = a*b;
-		if (norm_vec < 0.1 && dst > 128) continue;
-		int LoD = 0;
-		//if (dst > 128) LoD = 1;
-		if (dst > 192) LoD = 2;
-		//if (dst > 256 + 128) LoD = 3;
-		if(dst > 512) LoD = 4;
-		//	if(dst > 1024) LoD = 5; 
-		if (static_lists[i][LoD] == 0) {
-			for (int j = 0; j < 6; j++)  {
-				if (static_lists[i][j] != 0) {
-					glDeleteLists(static_lists[i][j], 1);
-					static_lists[i][j] = 0;
-				}
-			}
-			LodGenerate(i, LoD);
-			glCallList(static_lists[i][LoD]);
-		}
-		else glCallList(static_lists[i][LoD]);
-	}
-	glEnable(GL_DEPTH_TEST);
-	glBegin(GL_TRIANGLES);
-	float pol_size = 512.0f;
-	float grid_size = 2048.0f;
-	for (float a = -grid_size * 11.0f; a <= grid_size * 12.0f; a += 4096.0f) {
-		for (float b = -grid_size * 11.0f; b <= grid_size * 12.0f; b += 4096.0f) {
-			if(a == 2048.0f && b == 2048.0f) continue;
-			if (dist(Camera::getPosition(), Vector3D(a, b, 0)) > 1000000.0f) continue;
-			for (float x = -grid_size + a; x < grid_size + a; x += pol_size) {
-				for (float y = -grid_size + b; y < grid_size + b; y += pol_size) {
-					glNormal3f(0, 1.0, -10.0);
-					glTexCoord2d(x, y);
-					glVertex3f(x, y, 0);
-
-					glNormal3f(0, 1.0, -10.0);
-					glTexCoord2d(x + pol_size, y);
-					glVertex3f(x + pol_size, y, 0);
-
-					glNormal3f(0, 1.0, -10.0);
-					glTexCoord2d(x, y + pol_size);
-					glVertex3f(x, y + pol_size, 0);
-
-					glNormal3f(0, 1.0, -10.0);
-					glTexCoord2d(x, y + pol_size);
-					glVertex3f(x, y + pol_size, 0);
-
-					glNormal3f(0, 1.0, -10.0);
-					glTexCoord2d(x + pol_size, y);
-					glVertex3f(x + pol_size, y, 0);
-
-					glNormal3f(0, 1.0, -10.0);
-					glTexCoord2d(x + pol_size, y + pol_size);
-					glVertex3f(x + pol_size, y + pol_size, 0);
-
-
-					///////
-
-					glNormal3f(0, -1.0, -10.0);
-					glTexCoord2d(x, y);
-					glVertex3f(x, y, 0);
-
-					glNormal3f(0, -1.0, -10.0);
-					glTexCoord2d(x, y + pol_size);
-					glVertex3f(x, y + pol_size, 0);
-
-					glNormal3f(0, -1.0, -10.0);
-					glTexCoord2d(x + pol_size, y);
-					glVertex3f(x + pol_size, y, 0);
-
-					glNormal3f(0, -1.0, -10.0);
-					glTexCoord2d(x, y + pol_size);
-					glVertex3f(x, y + pol_size, 0);
-
-					glNormal3f(0, -1.0, -10.0);
-					glTexCoord2d(x + pol_size, y + pol_size);
-					glVertex3f(x + pol_size, y + pol_size, 0);
-
-					glNormal3f(0, -1.0, -10.0);
-					glTexCoord2d(x + pol_size, y);
-					glVertex3f(x + pol_size, y, 0);
-
-
-				}
-			}
-		}
-	}
-	glEnd();
+	DrawMain();
 	glUseProgram(0);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_CULL_FACE);

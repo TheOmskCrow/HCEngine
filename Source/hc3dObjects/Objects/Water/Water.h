@@ -16,6 +16,7 @@ namespace hc3d {
 	private:
 
 		void LodGenerate(int num, int level);
+		void DrawMain();
 		void setShader();
 		void CenterGenerate(int num);
 		float dist(Vector3D a, Vector3D b);

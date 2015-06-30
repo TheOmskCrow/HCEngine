@@ -150,14 +150,14 @@ void Stone::Stone_init() {
 
 void Stone::Draw() {
 	float yaw = 0;
-	if (!Info::GetShader() || Terrain::refract || Terrain::reflect) yaw = 3.0;
-	if (yaw == 0 && !Terrain::reflect && !Terrain::refract) offset += (rnd() / 5.0 + 0.05)*Info::GetElapsedTime();
+	if (!Info::GetShader() || Info::GetRefract() || Info::GetReflect()) yaw = 3.0;
+	if (yaw == 0 && !Info::GetReflect() && !Info::GetRefract()) offset += (rnd() / 5.0 + 0.05)*Info::GetElapsedTime();
 	float pi = 3.141592;
 	Vector3D player = Camera::getPosition();
 	int samples = 0;
 
 	for (int i = 0; i < Stone_num; i++) {
-		if (Terrain::refract) {
+		if (Info::GetRefract()) {
 			if (stone[i].z > 1.0) continue;
 		}
 		float dst = distance(stone[i], player);

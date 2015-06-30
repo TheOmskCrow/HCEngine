@@ -14,6 +14,7 @@ namespace hc3d {
 		Vector3D cloudSpeed;
 		GLuint shaderprogram;
 		GLuint *texture;
+		float layerHeight;
 		Vector3D pos;
 		float distance(Vector3D a, Vector3D b);
 		Vector3D* qSort(Vector3D *A, int low, int high);

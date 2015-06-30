@@ -59,7 +59,7 @@ namespace hc3d {
 		}
 		/// Отрисовать все объекты
 		/// Первый параметр определяет наличие теней на сцене, второй - наличие преломлений / отражений водной поверхности
-		void MakeShadows(int num, float perspective_size) {
+		void MakeShadows(int num, float perspective_size, Vector3D lightPosition) {
 
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
@@ -76,11 +76,10 @@ namespace hc3d {
 			glLoadIdentity();
 
 			float widthHeightRatio = (float)Info::width() / (float)Info::height();
-			Vector3D sun = Info::GetSun();
-			gluPerspective(perspective_size, widthHeightRatio, 200.0, 12000.0);
+			gluPerspective(perspective_size, widthHeightRatio, 200.0, 12000.0);//TODO: dynamic values
 
 			Vector3D c_pos = Camera::getPosition();
-			gluLookAt(sun.x*3.0, sun.y*3.0, sun.z*3.0,		// eye
+			gluLookAt(lightPosition.x, lightPosition.y, lightPosition.z,		// eye
 				c_pos.x, c_pos.y, c_pos.z,	// center
 				0, 0, 1);						// up
 			glMatrixMode(GL_MODELVIEW);
@@ -98,7 +97,6 @@ namespace hc3d {
 				SceneBuilder::Draw();
 				//draw here
 			}
-			//	cloud.draw(false,cloud_offset);
 			Shadow::shadow_shot(num);
 			Info::SetShader(true);
 
@@ -123,9 +121,10 @@ namespace hc3d {
 		}
 
 		void CreateShadows() {
-			MakeShadows(1, 0.5);
-			if(Info::GetShadowDist() > 150.0) MakeShadows(2, 3);
-			if(Info::GetShadowDist() > 250.0) MakeShadows(3, 30);
+			Vector3D lightPosition = Camera::getPosition() + Info::GetSun() * 3.0;
+			MakeShadows(1, 0.5, lightPosition);
+			if (Info::GetShadowDist() > 150.0) MakeShadows(2, 3, lightPosition);
+			if (Info::GetShadowDist() > 250.0) MakeShadows(3, 8, lightPosition);
 		}
 
 		void Draw() {

@@ -70,6 +70,9 @@
     <Filter Include="Objects\Ocean\glm\virtrev">
       <UniqueIdentifier>{ad1cdea5-1975-4815-a498-5ca17bbf066f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Objects\Plane">
+      <UniqueIdentifier>{5f0b6d87-2957-47b3-aaf7-d39707a636c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -483,6 +486,9 @@
     <ClInclude Include="Objects\Ocean\glm\virtrev\xstream.hpp">
       <Filter>Objects\Ocean\glm\virtrev</Filter>
     </ClInclude>
+    <ClInclude Include="Objects\Plane\Plane.h">
+      <Filter>Objects\Plane</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -547,6 +553,9 @@
     </ClCompile>
     <ClCompile Include="Objects\Ocean\glm\core\dummy.cpp">
       <Filter>Objects\Ocean\glm\core</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Plane\Plane.cpp">
+      <Filter>Objects\Plane</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

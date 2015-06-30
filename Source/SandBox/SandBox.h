@@ -4,6 +4,7 @@
 #include <hc3dContentLoader.h>
 #include <hc3dObjects.h>
 #include <hc3dMath.h>
+#include <hc3dToolkit.h>
 
 using namespace hc3d;
 

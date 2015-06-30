@@ -28,6 +28,7 @@ bool Info::jet_gas = false;
 bool Info::collision = false;
 bool Info::jet_stop = false;
 int Info::jetpack = 100000;
+int Info::planeState = 0;
 GLuint Info::shaderprogram = 0;
 int Info::shadow = 0;
 int Info::min_quad = 2;
@@ -70,8 +71,48 @@ bool Info::toneMapping = false;
 bool Info::SSAO = false;
 bool Info::atmosphereRun = false;
 bool Info::sceneBuild = false;
+bool Info::refract = false;
+bool Info::reflect = false;
 float Info::wait = 0.0;
 GLuint Info::curBindTexture = 17;
+clock_t Info::roundTime = 0;
+clock_t Info::startRoundTime = 0;
+bool Info::runned = false;
+bool Info::finished = false;
+std::vector<std::string> Info::messages;
+std::vector<Vector3D> Info::messageColors;
+std::vector<float> Info::messageLife;
+float Info::vehSpeed = 0.0f;
+
+void Info::SetVehSpeed(float khSpeed) {
+	vehSpeed = khSpeed;
+}
+		
+
+bool Info::IsRunned() {
+	return runned;
+}
+
+void Info::DropMessages() {
+	messages.clear();
+	messageColors.clear();
+	messageLife.clear();
+}
+
+void Info::AddMessage(std::string message, Vector3D color, float time) {
+	if (messages.size() > 5) {
+		messages.erase(messages.begin());
+		messageColors.erase(messageColors.begin());
+		messageLife.erase(messageLife.begin());
+	}
+	messages.push_back(message);
+	messageColors.push_back(color);
+	messageLife.push_back(time);
+}
+
+int Info::GetPlaneState() {
+	return planeState;
+}
 
 GLuint Info::GetCurBindTexture() {
 	return curBindTexture;
@@ -171,6 +212,94 @@ int Info::GetMaxWater() {
 	return max_water;
 }
 
+bool Info::GetRefract() {
+	return refract;
+}
+
+void Info::SetRefract(bool refract) {
+	Info::refract = refract;
+}
+
+bool Info::GetReflect() {
+	return reflect;
+}
+
+void Info::SetReflect(bool reflect) {
+	Info::reflect = reflect;
+}
+
+void Info::StartRound() {
+	DropMessages();
+	startRoundTime = clock();
+	finished = false;
+	runned = true;
+}
+
+void Info::EndRound(bool success) {
+	roundTime = clock() - startRoundTime;
+	
+	if (success) {
+		int curRes = roundTime;
+		FILE *fp;
+		fopen_s(&fp, "results.txt", "r");
+
+		int result;
+		fscanf(fp, "%d\n", &result);
+		fclose(fp);
+
+		char curResC[100];
+		char resC[100];
+
+		int curTime = curRes;
+		int mSec = curTime % 1000;
+		curTime /= 1000;
+		int sec = curTime % 60;
+		curTime /= 60;
+		int min = curTime % 60;
+		curTime /= 60;
+		int hour = curTime % 24;
+		sprintf(curResC, "time: %d:%d:%d:%d\n", hour, min, sec, mSec);
+
+		curTime = result;
+		mSec = curTime % 1000;
+		curTime /= 1000;
+		sec = curTime % 60;
+		curTime /= 60;
+		min = curTime % 60;
+		curTime /= 60;
+		hour = curTime % 24;
+		sprintf(resC, "time: %d:%d:%d:%d\n", hour, min, sec, mSec);
+		DropMessages();
+
+		if (curRes < result) {
+			FILE *fp;
+			fopen_s(&fp, "results.txt", "w");
+
+			int result;
+			fprintf(fp, "%d\n", curRes);
+			fclose(fp);
+
+			AddMessage("New record!", Vector3D(1.0, 0.5, 0.5), 300);
+			AddMessage(string("Your ") + curResC, Vector3D(0.5, 1.0, 0.5), 300);
+			AddMessage(string("Best ") + resC, Vector3D(1.0, 0.0, 0.0), 300);
+		}
+		else {
+			AddMessage(string("Your ") + curResC, Vector3D(1.0, 0.0, 0.0), 300);
+			AddMessage(string("Best ") + resC, Vector3D(0.5, 1.0, 0.5), 300);
+		}
+	}
+	runned = false;
+	finished = true;
+}
+
+void Info::AddPlayerScore(int score) {
+	startRoundTime += score * 1000;
+}
+
+void Info::SubPlayerScore(int score) {
+	startRoundTime -= score * 1000;
+}
+
 void Info::atmosphere_calc() {
 	atmo_color = Vector3D(0,0,0);
     float poz = 0.0;
@@ -245,7 +374,7 @@ Info::Info(void)
 void Info::init() {
 	//TODO: настроить прием из параметров и из консоли
 	shadow = 0;
-	shadowDist = 350.0;
+	shadowDist = 500.0;
 
 	RECT display;
 	const HWND hDisplay = GetDesktopWindow();
@@ -313,12 +442,16 @@ void Info::run(int w,int h) {
 		wait -= 30.0;
 	}
 	calc_fps();
-	render_fps(20,20,w,h);
+	DrawMessage(w, h);
+	if (runned) {
+		render_fps(20, 20, w, h);
+	}
 	atmosphere_calc();
 	shader = true;
 	curBindTexture = 17;
 	//if (atmosphereRun) 
 	longitude += (0.0125*3.1415 / 180) * elapsed_time;//2 real seconds = 1 game minute
+	//if (!runned && !messages.size()) AddMessage("Press \"R\" to start game", Vector3D(1.0, 0.0, 0.0));
 }
 char* Info::init_fps_string(char* string) {
 		Vector3D pos = Camera::getPosition();
@@ -330,6 +463,20 @@ char* Info::init_fps_string(char* string) {
 		output += string;
 		strcpy(string, output.c_str());
 		return string;
+}
+
+char* Info::GetGameString(char * format) {
+	clock_t curTime = clock() - startRoundTime;
+	int mSec = curTime % 1000;
+	curTime /= 1000;
+	int sec = curTime % 60;
+	curTime /= 60;
+	int min = curTime % 60;
+	curTime /= 60;
+	int hour = curTime % 24;
+	sprintf(format, "Time: %d:%d:%d:%d\nSpeed: %.1f km\/hour", hour, min, sec, mSec, vehSpeed);
+	//std::cout << format << std::endl;
+	return format;
 }
 
 void Info::inputChar(unsigned char key) {
@@ -435,9 +582,60 @@ void Info::console() {
 	glPopMatrix();
 
 }
+
+void Info::DrawMessage(int w, int h) {
+	int x = w / 2 - 30;
+	int y = h / 2;
+	glUseProgram(0);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0.0, w, 0.0, h);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glUseProgram(shaderprogram);
+	glRasterPos2i(x, y);
+
+	int a = 1;
+
+	
+	for (int i = 0; i < messages.size();) {
+		if (messageLife[i] < 0.0f) {
+			messageLife.erase(messageLife.begin() + i);
+			messageColors.erase(messageColors.begin() + i);
+			messages.erase(messages.begin() + i);
+		}
+		else i++;
+	}
+
+	for (int i = 0; i < messages.size(); i++) {
+		glUniform3f(glGetUniformLocation(
+			shaderprogram, "color"), messageColors[i].x, messageColors[i].y, messageColors[i].z);
+		auto _string = messages[i];
+		messageLife[i] -= elapsed_time;
+		//std::cout << _string.c_str() << std::endl;
+		for (int i = 0; i < _string.size(); ++i) {
+			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, _string[i]);
+		}
+		glRasterPos2i(x, y - 20 * a);
+		a++;
+	}
+	glUseProgram(0);
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+}
+
 void Info::render_fps(int x, int y,int w, int h) {
 			char *_string = new char[1000];
-			_string = init_fps_string(_string);
+			//GetGameString(_string);
+			init_fps_string(_string);
 			glUseProgram(0);
 			glMatrixMode(GL_PROJECTION);
 			glPushMatrix();
@@ -462,14 +660,16 @@ void Info::render_fps(int x, int y,int w, int h) {
 					a++;
 				}
 			}
-			glRasterPos2i(w/2, h/2); 
-			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
+		//	glRasterPos2i(w/2, h/2); 
+		//	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
+
 			glUseProgram(0);
 			glMatrixMode(GL_MODELVIEW);
 			glPopMatrix();
 
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
+			delete[] _string;
 			
 }
 void Info::calc_fps() {

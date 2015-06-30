@@ -6,14 +6,16 @@
 
 using namespace hc3d;
 
-TerrainList Terrains::list;
-
 Atmosphere* hc3d::GetAtmo() {
 	return new Atmosphere();
 }
 
 Terrain* hc3d::GetTer(std::string mapName, Vector3D offset) {
 	return new Terrain(mapName, offset);
+}
+
+Terrains* hc3d::GetTerrain() {
+	return new Terrains();
 }
 
 Butterfly* hc3d::GetBut() {
@@ -30,6 +32,10 @@ Clouds* hc3d::GetClouds() {
 
 Tree* hc3d::GetTrees() {
 	return new Tree();
+}
+
+Plane* hc3d::GetPlane() {
+	return new Plane();
 }
 
 GameWindow* hc3d::GetGameWindow() {
@@ -58,8 +64,8 @@ cOcean* hc3d::GetOcean() {
 
 float hc3d::CalcTerHeight(Vector3D position) {
 	for (TerrainList::iterator it = Terrains::list.begin(); it != Terrains::list.end(); ++it) {
-		if ((it->second.x - Terrain::dimension <= position.x) && (it->second.x + Terrain::dimension - 0.1 > position.x) &&
-			(it->second.y - Terrain::dimension <= position.y) && (it->second.y + Terrain::dimension - 0.1 > position.y) && it->first->Loaded())
+		if ((it->second.x - Terrain::dimension <= position.x) && (it->second.x + Terrain::dimension > position.x) &&
+			(it->second.y - Terrain::dimension <= position.y) && (it->second.y + Terrain::dimension > position.y) && it->first->Loaded())
 			return it->first->calc_height(position);
 	}
 	return -10;
@@ -67,8 +73,8 @@ float hc3d::CalcTerHeight(Vector3D position) {
 
 Vector3D hc3d::CalcTerNormal(Vector3D position) {
 	for (TerrainList::iterator it = Terrains::list.begin(); it != Terrains::list.end(); ++it) {
-		if ((it->second.x - Terrain::dimension <= position.x) && (it->second.x + Terrain::dimension - 0.1 > position.x) &&
-			(it->second.y - Terrain::dimension <= position.y) && (it->second.y + Terrain::dimension - 0.1 > position.y) && it->first->Loaded())
+		if ((it->second.x - Terrain::dimension <= position.x) && (it->second.x + Terrain::dimension > position.x) &&
+			(it->second.y - Terrain::dimension <= position.y) && (it->second.y + Terrain::dimension > position.y) && it->first->Loaded())
 			return it->first->calc_normal(position);
 	}
 	return Vector3D(0.0, 0.0, 1.0);
@@ -86,10 +92,6 @@ void hc3d::Refract() {
 	Water::refract();
 }
 
-void hc3d::SetRefract(bool value) {
-	Terrain::refract = value;
-}
-
-void hc3d::SetReflect(bool value) {
-	Terrain::reflect = value;
+void hc3d::AddTerrain(std::string path, Vector3D size, Vector3D location) {
+	Terrains::AddTerrain(path, size, location);
 }

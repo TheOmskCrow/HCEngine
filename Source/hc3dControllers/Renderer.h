@@ -6,11 +6,15 @@
 #include <hc3dMath.h>
 #include <dllmain.h>
 #include <Material.h>
+#include <ShaderLib.h>
+#include <Control\Camera.h>
+#include <Control\Info.h>
 
 namespace hc3d {
 	class HC3D_API Renderer
 	{
 	public:
+		static void SetShader(const char* name);
 		static void SetShader(GLuint shaderprogram);
 		static bool UseMaterial(Material& data);
 		static bool UseMaterial(std::string name);

@@ -13,6 +13,10 @@ namespace hc3d {
 		Camera(void);
 		static void init();
 		static void set_camera(int, int, int, int);
+		static void SetEuler(float yaw, float pitch, float roll);
+		static void SetLookAt(Vector3D lookAt);
+		static Vector3D GetLookAt();
+		static void SetRollBy(Vector3D rollBy);
 		~Camera(void);
 		static float rnd();
 		static Vector3D getPosition();
@@ -33,6 +37,8 @@ namespace hc3d {
 		static float pitch;
 		static float roll;
 		static float frames;
+		static Vector3D lookAt;
+		static Vector3D rollBy;
 		static bool goa;
 		static bool gow;
 		static bool gos;

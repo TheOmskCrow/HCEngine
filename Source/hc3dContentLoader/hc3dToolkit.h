@@ -13,6 +13,8 @@
 #include <gl\GLU.h>
 #include <glext.h>
 #include <comutil.h>
+#include <string>
+#include <hc3dMath.h>
 
 namespace hc3d {
 	class hc3dToolkit
@@ -33,6 +35,19 @@ namespace hc3d {
 			int found = handle != INVALID_HANDLE_VALUE;
 			if (found) FindClose(handle);
 			return found != 0;
+		}
+
+		//convert XYZ to BMP
+		HC3D_API static void XYZtoBMP();
+
+		HC3D_API static Vector3D heightToRgb(float height) {
+			int iHeight = height * 10.0;
+			int b = iHeight / (256 * 256);
+			iHeight -= b * 256 * 256;
+			int g = iHeight / 256;
+			iHeight -= g * 256;
+			int r = iHeight;
+			return Vector3D(r, g, b);
 		}
 	};
 }

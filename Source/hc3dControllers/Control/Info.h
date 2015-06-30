@@ -63,11 +63,22 @@ namespace hc3d {
 		static GLuint GetModelShader(); static void SetModelShader(GLuint);
 		static bool GetModelShaderInited(); static void SetModelShaderInited(bool);
 		static GLuint GetCurBindTexture(); static void RaiseCurBindTexture();
+		static bool GetRefract(); static void SetRefract(bool refract);
+		static bool GetReflect(); static void SetReflect(bool reflect);
+		static void StartRound(); static void EndRound(bool success = true);
+		static bool IsRunned();
+		static void AddPlayerScore(int); static void SubPlayerScore(int);
+		static void AddMessage(std::string message, Vector3D color, float time = 30.0);
+		static void DropMessages();
+		static int GetPlaneState();
+		static void SetVehSpeed(float);
 	public:
+		static float vehSpeed;
 		static GLuint curBindTexture;
 		static float latitude;
 		static float longitude;
 		static float shadowDist;
+		static int planeState;
 		static int jetpack;
 		static int LoD;
 		static bool SSAO;
@@ -121,9 +132,18 @@ namespace hc3d {
 	private:
 		static bool atmosphereRun;
 		static void render_fps(int, int, int, int);
+		static void DrawMessage(int, int);
 		static void calc_fps();
 		static char* init_fps_string(char*);
+		static char* GetGameString(char *);
 	private:
+		static std::vector<std::string> messages;
+		static std::vector<Vector3D> messageColors;
+		static std::vector<float> messageLife;
+		static bool runned;
+		static bool finished;
+		static clock_t roundTime;
+		static clock_t startRoundTime;
 		static int cur_time;
 		static int start_time;
 		static int frames;
@@ -131,6 +151,8 @@ namespace hc3d {
 		static int _height;
 		static float fps;
 		static double time;
+		static bool refract;
+		static bool reflect;
 	};
 
 }

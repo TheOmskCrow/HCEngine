@@ -37,6 +37,8 @@ float Camera::TP_ammount = -1.0;
 bool Camera::boat_mode = false;
 bool Camera::FP = true;
 bool Camera::camera_inited = false;
+Vector3D Camera::lookAt(0,0,0);
+Vector3D Camera::rollBy(0, 0, 0);
 
 Vector3D Camera::getPosition() {
 	return position;
@@ -92,6 +94,26 @@ void Camera::init() {
 float Camera::rnd() {
 	return (float(rand()%1000)/100.0-5.0)/500.0;
 }
+
+void Camera::SetEuler(float yaw, float pitch, float roll) {
+	Camera::yaw = yaw;
+	Camera::pitch = pitch;
+	Camera::roll = roll;
+}
+
+void Camera::SetLookAt(Vector3D lookAt) {
+	Camera::lookAt = lookAt;
+}
+
+Vector3D Camera::GetLookAt() {
+	return Camera::lookAt;
+}
+
+
+void Camera::SetRollBy(Vector3D rollBy) {
+	Camera::rollBy = rollBy;
+}
+
 void Camera::set_camera(int x, int y,int w, int h) {
 	// mouse smooth
 	mousex.x = mousex.y;
@@ -106,6 +128,7 @@ void Camera::set_camera(int x, int y,int w, int h) {
 	y = (mousey.x + mousey.y + mousey.z) / 3.0;
 
 	if(TP_ammount > -1.0) TP_ammount += 0.1;
+	
 	yaw += -x*sensivity*0.01;
 	pitch += -y*sensivity*0.01;
 	pitch = max(min(pitch,pi/2.01),-pi/2.01); // 2.01 - необходимое допущение погрешности

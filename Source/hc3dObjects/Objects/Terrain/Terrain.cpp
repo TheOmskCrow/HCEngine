@@ -6,50 +6,40 @@
 #include <hc3dObjects.h>
 #include <hc3dMath.h>
 #include "Material.h"
+#include "ShaderLib.h"
 //#include "Collision.h"
 #include <iostream>
 #include <thread>
 #include <mutex>
+ 
+#define HMAP_LOAD 1
+#define HMAP_DELETE 2
+#define COLLISION_LOAD 3
+#define COLLISION_DELETE 4
 
 #define TEXEL_SIZE 64
 #define MAP_DIMENSION 512
-#define LOD_LEVELS 6
-#define VISIBILITY_THRESHOLD 6000
+#define LOD_LEVELS 4
+#define VISIBILITY_THRESHOLD 8000
+#define ACCESSIBILITY_THRESHOLD 1000
+#define TERRAIN_SCALE 2
+
 using namespace hc3d;
 
 std::mutex iMutex;
-GLuint Terrain::shaderprogram = 0;
-
-bool Terrain::reflect = false;
-bool Terrain::refract = false;
 int Terrain::dimension = 512; //duplication
 GLuint* Terrain::caust = 0;
-GLuint* Terrain::texture = 0;
 
 Terrain::Terrain(std::string mapName, Vector3D offset) {
 	this->mapName = mapName;
 	this->offset = offset;
 	pol = 20;
-	loaded = false;
-	loading = false;
+	loadedHM = false;
+	loadedCol = false;
+	busy = false;
 }
 
-bool Terrain::Visible() {
-	return dist(offset + Vector3D(MAP_DIMENSION, MAP_DIMENSION, 0), Camera::getPosition()) < VISIBILITY_THRESHOLD;
-}
-
-DWORD_PTR WINAPI SingleTerrainLoadThread(void* p) {
-	Terrain *ptr = (Terrain *) p;
-	ptr->Load();
-	return 0;
-}
-
-void Terrain::Init(){
-	if (loading) return;
-	bool visibility = Visible();
-	if (!visibility && loaded) return Delete();
-	else if (!visibility || loaded) return;
-
+void Terrain::InitMaterials() {
 	if (!caust) {
 		caust = new GLuint[32];
 		for (int i = 0; i < 32; i++) {
@@ -72,19 +62,13 @@ void Terrain::Init(){
 		Material mat;
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
-		mat.SetDiffuse("Texture/beach/beach1.png");
+		mat.SetDiffuse("Texture/beach/beach1.png", Vector3D(0.745f, 0.674f, 0.513f), 150.0f);
 
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
 		mat.SetHeight("Texture/beach/beach1_height.png", 0.005f);
 		mat.SetAmbient(ATMOSPHERE);
-//		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-//		Info::RaiseCurTextureNum();
-//		mat.SetNormal("Texture/beach/beach1_normal.png", 0.3f);
 
-//		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-//		Info::RaiseCurTextureNum();
-//		mat.SetSpecular("Texture/beach/beach1_specular.png", 9.0f, 1.0f);
 		MatLib::Add("beach1", mat);
 	}
 
@@ -92,19 +76,12 @@ void Terrain::Init(){
 		Material mat;
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
-		mat.SetDiffuse("Texture/rock/rock1.png");
-
-		//glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		//Info::RaiseCurTextureNum();
-		//mat.SetHeight("Texture/beach/beach1_height.png", 0.005f);
+		mat.SetDiffuse("Texture/rock/rock1.png", Vector3D(0.431f, 0.427f, 0.423f), 2000.0f);
 
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
 		mat.SetNormal("Texture/rock/rock1_normal.png", 0.3f);
 
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		mat.SetSpecular("Texture/rock/rock1_specular.png", 20.0f, 0.7f);
 		mat.SetAmbient(ATMOSPHERE);
 		MatLib::Add("mountain1", mat);
 	}
@@ -112,91 +89,114 @@ void Terrain::Init(){
 		Material mat;
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
-		mat.SetDiffuse("Texture/snow/snow1.png");
-
-		//glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		//Info::RaiseCurTextureNum();
-		//mat.SetHeight("Texture/beach/beach1_height.png", 0.005f);
+		mat.SetDiffuse("Texture/snow/snow1.png", Vector3D(0.811f, 0.811f, 0.815f), 200.0f);
 
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
-		mat.SetNormal("Texture/snow/snow1_normal.png", 0.1f);
+		mat.SetNormal("Texture/rock/rock1_normal.png", 0.1f);
 
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
-		mat.SetSpecular("Texture/snow/snow1_specular.png", 15.0f, 1.0f);
+		mat.SetSpecular("Texture/rock/rock1_specular.png", 15.0f, 1.0f);
 		mat.SetAmbient(ATMOSPHERE);
 		MatLib::Add("snow1", mat);
 	}
+	if (!MatLib::IsUsed("grass1")) {
+		Material mat;
+		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
+		Info::RaiseCurTextureNum();
+		mat.SetDiffuse("Texture/grass/grass1.png", Vector3D(0.454f, 0.529f, 0.141f), 600.0f);
 
+		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
+		Info::RaiseCurTextureNum();
+		mat.SetNormal("Texture/grass/grass1_normal.png", 0.3f);
 
-	if (!texture) {
-		texture = new GLuint[17];
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		//texture[0] = LoadTexture("Texture/stoneBeach2.png");
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		texture[1] = LoadTexture("Texture/rock22.png");
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		texture[2] = LoadTexture("Texture/caustics.png");
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		texture[3] = LoadTexture("Texture/hei1.png");
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		texture[4] = CreateTexture(GL_RGBA, 2);
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		texture[6] = LoadTexture("Texture/height2.png");
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		texture[8] = LoadTexture("Texture/grass1.png");
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
-		texture[9] = LoadTexture("Texture/rock5_height.png");
-		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
-		Info::RaiseCurTextureNum();
+		mat.SetAmbient(ATMOSPHERE);
+		MatLib::Add("grass1", mat);
 	}
-	if(!shaderprogram) shaderprogram = LoadShader("Shaders/ground.vert", "Shaders/ground.frag");
+	if (!MatLib::IsUsed("mask1")) {
+		Material mat;
+		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
+		Info::RaiseCurTextureNum();
+		mat.SetDiffuse("Texture/hei1.png", Vector3D(0.5f, 0.5f, 0.5f), 5000.0f);
+		mat.SetAmbient(NONE);
 
+		MatLib::Add("mask1", mat);
+	}
+	if (!MatLib::IsUsed("mask2")) {
+		Material mat;
+		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
+		Info::RaiseCurTextureNum();
+		mat.SetDiffuse("Texture/height2.png", Vector3D(0.5f, 0.5f, 0.5f), 5000.0f);
+		mat.SetAmbient(NONE);
+		MatLib::Add("mask2", mat);
+	}
+	if (!ShaderLib::IsUsed("ground")) ShaderLib::Add("ground", "Shaders/ground.vert", "Shaders/ground.frag");
+}
+
+#pragma region TERRAIN_LOAD
+
+bool Terrain::Visible() {
+	return dist(offset + Vector3D(dimension, dimension, 0), Camera::getPosition()) < VISIBILITY_THRESHOLD;
+}
+
+bool Terrain::Accessible() {
+	return dist(offset + Vector3D(dimension, dimension, 0), Camera::getPosition()) < ACCESSIBILITY_THRESHOLD;
+}
+
+DWORD_PTR WINAPI SingleTerrainProcessThread(void* p) {
+	Terrain *ptr = (Terrain *)p;
+	ptr->Process();
+	return 0;
+}
+
+HANDLE Terrain::RunMultiThreadTask() {
 	DWORD_PTR cpuNum = hc3dToolkit::GetNumCPUs();
 	HANDLE m_thread;
 	Terrain* iparam = this;
 
 	DWORD_PTR i = rand() % cpuNum;
-	size_t activatedCpu = 0;
-	DWORD thStatus;
 	DWORD m_id = 0;
 	DWORD m_mask = 1 << i;
-	m_thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SingleTerrainLoadThread, (LPVOID)iparam, NULL, &m_id);
-	loading = true;
+	m_thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SingleTerrainProcessThread, (LPVOID)iparam, NULL, &m_id);
 	SetThreadAffinityMask(m_thread, m_mask);
-
+	return m_thread;
 }
 
-void Terrain::Delete() {
-	loaded = false;
-	for (int i = 0; i < listNum; i++) {
-		for (int j = 0; j < LOD_LEVELS; j++) {
-			if (static_lists[i][j] != 0) {                                 
-					glDeleteLists(static_lists[i][j], 1);
-			}
-		}
-		delete[] static_lists[i];
-	}
-	delete[] static_lists;
+HANDLE Terrain::InitHM() { // heightmap init
+	if (busy) return nullptr;
+	else busy = true;
 
-	for (int i = 0; i < MAP_DIMENSION; i++) {
-		delete[] hmap[i];
-		delete[] nmap[i];
-	}
+	bool visibility = Visible();
 
-	delete[] list_center;
-	delete[] hmap;
-	delete[] nmap;
-	Collision::DeleteTerrain(terrainCollisionBox);
+	if (!visibility && loadedHM) state = HMAP_DELETE;
+	else if (!visibility || loadedHM) {
+		busy = false;
+		return nullptr;
+	}
+	else state = HMAP_LOAD;
+
+	return RunMultiThreadTask();
+}
+
+HANDLE Terrain::InitCollision() {
+	if (busy) return nullptr;
+	else busy = true;
+
+	bool accessibility = Accessible();
+
+	if (!accessibility && loadedCol) state = COLLISION_DELETE;
+	else if (!accessibility || loadedCol) {
+		busy = false;
+		return nullptr;
+	}
+	else state = COLLISION_LOAD;
+
+	return RunMultiThreadTask();
+}
+
+void Terrain::Init() {
+
 }
 
 void Terrain::InitCache(std::string normalMapName, std::string heightMapName) {
@@ -240,19 +240,21 @@ void Terrain::InitCache(std::string normalMapName, std::string heightMapName) {
 	unsigned char C;
 	float z = 0;
 
-	for(int i=0;i<MAP_DIMENSION;i++)
-	for(int j=0;j<MAP_DIMENSION;j++)
-	{
-	memcpy(&C,tbmpbuffer + tBMP.bfOffBits + 0 + i*3 + MAP_DIMENSION*j*3, 1);
-	z+=C;
-	memcpy(&C,tbmpbuffer + tBMP.bfOffBits + 1 + i*3 + MAP_DIMENSION*j*3, 1);
-	z+=C;
-	memcpy(&C,tbmpbuffer + tBMP.bfOffBits + 2 + i*3 + MAP_DIMENSION*j*3, 1);
-	z+=C;
-	tmp[i][j] = z-20;
-	hmap[i][j] = 0;//+(rand()%1000)/1000.0-1.0;
-	//	printf("hmap[i][j] = %.2f\n", hmap[i][j]);
-	z = 0.0;
+	for (int i = 0; i<MAP_DIMENSION; i++) {
+		for (int j = 0; j < MAP_DIMENSION; j++) {
+			memcpy(&C, tbmpbuffer + tBMP.bfOffBits + 0 + i * 3 + MAP_DIMENSION*j * 3, 1);
+			//z += C * 256 * 256;
+			memcpy(&C, tbmpbuffer + tBMP.bfOffBits + 1 + i * 3 + MAP_DIMENSION*j * 3, 1);
+			//z += C * 256;
+			memcpy(&C, tbmpbuffer + tBMP.bfOffBits + 2 + i * 3 + MAP_DIMENSION*j * 3, 1);
+			z += C;
+			tmp[i][j] = z * 2.0 - 5.0;
+			if (tmp[i][j] < 0.0) tmp[i][j] -= 2.0;
+			else tmp[i][j] += 2.0;
+			hmap[i][j] = 0;//+(rand()%1000)/1000.0-1.0;
+			//	printf("hmap[i][j] = %.2f\n", hmap[i][j]);
+			z = 0.0;
+		}
 	}
 	const int core = 1;
 	const float coeff = 9.0;
@@ -325,8 +327,26 @@ void Terrain::InitCache(std::string normalMapName, std::string heightMapName) {
 	//
 }
 
-void Terrain::Load(){
-	std::lock_guard<std::mutex> lock(iMutex);
+void Terrain::Process() {
+	switch (state) {
+	case HMAP_LOAD:
+		LoadHM();
+		break;
+	case HMAP_DELETE:
+		DeleteHM();
+		break;
+	case COLLISION_LOAD:
+		LoadCollision();
+		break;
+	case COLLISION_DELETE:
+		DeleteCollision();
+		break;
+	default:
+		cout << "invalid state: " << state << endl;
+	}
+}
+
+void Terrain::LoadHM() {
 	std::string normalMapName = mapName + std::string(".normal");
 	std::string heightMapName = mapName + std::string(".height");
 
@@ -335,6 +355,9 @@ void Terrain::Load(){
 	static_lists = new int*[listNum];
 	for (int i = 0; i < listNum; i++) {
 		static_lists[i] = new int[LOD_LEVELS];//64x64 6 levels
+		for (int j = 0; j < LOD_LEVELS; j++) {
+			static_lists[i][j] = 0;
+		}
 	}
 	list_center = new Vector3D[listNum];//numbers -> variables
 	hmap = new float*[MAP_DIMENSION];
@@ -343,11 +366,11 @@ void Terrain::Load(){
 	for (int i = 0; i < MAP_DIMENSION; i++) {
 		hmap[i] = new float[MAP_DIMENSION];
 		nmap[i] = new Vector3D[MAP_DIMENSION];
-	//	tmap[i] = new Vector3D[MAP_DIMENSION];
+		//	tmap[i] = new Vector3D[MAP_DIMENSION];
 	}
 	FILE* nmapFile;
 	FILE* hmapFile;
-	
+
 
 	if (!hc3d::hc3dToolkit::FileExists(_bstr_t(normalMapName.c_str())) || !hc3d::hc3dToolkit::FileExists(_bstr_t(normalMapName.c_str()))) InitCache(normalMapName, heightMapName);
 	nmapFile = fopen(normalMapName.c_str(), "r");
@@ -355,7 +378,7 @@ void Terrain::Load(){
 
 	if (nmapFile == 0 || hmapFile == 0) {
 		fprintf(stderr, "no readable normal or height map exists\n");
-		MessageBoxA(0, "Can not open readable normal or height map", "dafuq", MB_OK);
+		MessageBoxA(0, heightMapName.c_str(), "dafuq", MB_OK);
 		exit(1);
 	}
 	for (int i = 0; i < MAP_DIMENSION; i++) {
@@ -387,10 +410,61 @@ void Terrain::Load(){
 			static_lists[i][j] = 0;
 		}
 	}
-	terrainCollisionBox = Collision::AddTerrain(MAP_DIMENSION, hmap, offset);
-	loading = false;
-	loaded = true;
+	loadedHM = true;
+	state = 0;
+	busy = false;
 }
+
+void Terrain::LoadCollision() {
+	const int heightfieldDim = MAP_DIMENSION + 1;
+	float *heightfield = new (float[heightfieldDim * heightfieldDim]);
+
+	int highest = -999999, j = 0;
+	for (int i = 0; i < heightfieldDim; i++) {
+		for (int j = 0; j < heightfieldDim; j++) {
+			float z = CalcTerHeight(Vector3D(i * 2 + offset.x, j * 2 + offset.y, 0)) + 20.0;
+			heightfield[j * heightfieldDim + i] = z;
+			if (z > highest)
+				highest = z;
+		}
+	}
+	terrainCollisionBox = Collision::AddTerrain(heightfieldDim, heightfield, offset);
+	loadedCol = true;
+	state = 0;
+	busy = false;
+}
+
+void Terrain::DeleteHM() {
+	loadedHM = false;
+	for (int i = 0; i < listNum; i++) {
+		for (int j = 0; j < LOD_LEVELS; j++) {
+			if (static_lists[i][j] != 0) {
+				glDeleteLists(static_lists[i][j], 1);
+			}
+		}
+		delete[] static_lists[i];
+	}
+	delete[] static_lists;
+
+	for (int i = 0; i < MAP_DIMENSION; i++) {
+		delete[] hmap[i];
+		delete[] nmap[i];
+	}
+
+	delete[] list_center;
+	delete[] hmap;
+	delete[] nmap;
+	state = 0;
+	busy = false;
+}
+
+void Terrain::DeleteCollision() {
+	loadedCol = false;
+	Collision::DeleteTerrain(terrainCollisionBox);
+	state = 0;
+	busy = false;
+}
+
 void Terrain::CenterGenerate(int num) {
 	int level = 0;
 	int size = 2;
@@ -412,7 +486,7 @@ void Terrain::LodGenerate(int num, int level) {
 		j_end = Math::hc3dMin(MAP_DIMENSION, j_end + level);
 	}
 
-	float size = 2.0f; // make class variable
+	float size = TERRAIN_SCALE; 
 	static_lists[num][level] = glGenLists(1);
 	glNewList(static_lists[num][level], GL_COMPILE);
 	level = int(pow(2.0, level));
@@ -471,112 +545,25 @@ void Terrain::LodGenerate(int num, int level) {
 	glDisable(GL_DEPTH_TEST);
 	glEndList();
 }
+
+#pragma endregion TERRAIN_LOAD
+
 void Terrain::setShader(){
-	Vector3D sun = Info::GetSun();
-	Vector3D pos = Camera::getPosition();
-	//Shadow shadow;
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "shadowing"), Info::GetShadow());
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "road"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
 
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "grass"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
-
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
+	GLuint shaderprogram;
+	ShaderLib::Get("ground", shaderprogram);
 
 	int curTex = (int)(((int)(Info::getTime()*80.0) % 1000) / 31.25);
 	glBindTexture(GL_TEXTURE_2D, caust[curTex]);
 	glUniform1i(glGetUniformLocation(
 		shaderprogram, "caustics"), Info::GetCurBindTexture());
 	Info::RaiseCurBindTexture();
-
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "shadowMap1"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
-
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[8]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "grass2"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
-
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[9]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "grass3"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
-
-	if (reflect) glUniform1i(glGetUniformLocation(
-		shaderprogram, "reflect"), 1);
-	else glUniform1i(glGetUniformLocation(
-		shaderprogram, "reflect"), 0);
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[3]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "hei1"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
-
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[4]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "hei2"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
-
-	glUniform3f(glGetUniformLocation(
-		shaderprogram, "atmosphere"), Info::GetAtmoColor().x, Info::GetAtmoColor().y, Info::GetAtmoColor().z);
-
-	glActiveTexture(GL_TEXTURE0 + Info::GetCurBindTexture());
-	glBindTexture(GL_TEXTURE_2D, texture[6]);
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "gr_hei"), Info::GetCurBindTexture());
-	Info::RaiseCurBindTexture();
-
-	glUniform1i(glGetUniformLocation(
-		shaderprogram, "flash"), Info::GetFlash());
-	glUniform1f(glGetUniformLocation(
-		shaderprogram, "shadowDist"), Info::GetShadowDist());
-
-	glUniform1f(glGetUniformLocation(
-		shaderprogram, "time"), (Info::getTime() / 100.0));
-	//std::cout << Info::getTime() << std::endl;
-	glUniform1f(glGetUniformLocation(
-		shaderprogram, "Width"), Info::width());
-	glUniform1f(glGetUniformLocation(
-		shaderprogram, "Height"), Info::height());
-	glUniform3f(glGetUniformLocation(
-		shaderprogram, "eyeNorm"), Info::GetEyeNormal().x, Info::GetEyeNormal().y, Info::GetEyeNormal().z);
-	glUniform3f(glGetUniformLocation(
-		shaderprogram, "eyePos"), pos.x, pos.y, pos.z);
-	if (reflect)
-		glUniform3f(glGetUniformLocation(
-		shaderprogram, "lightPos"), sun.x, sun.y, -sun.z);
-	else
-		glUniform3f(glGetUniformLocation(
-		shaderprogram, "lightPos"), sun.x, sun.y, sun.z);
 }
-void Terrain::shadow_shot(int num) {
-	int width = Info::width();
-	int height = Info::height();
-	int x_offset = (2048 - width) / 2;
-	int y_offset = (2048 - height) / 2;
-	glEnable(GL_TEXTURE_2D);
-	glActiveTexture(GL_TEXTURE0 + num);
-	glBindTexture(GL_TEXTURE_2D, texture[9 + num - 1]);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, int(width), int(height), 0);
-	//glCopyTexSubImage2D(GL_TEXTURE_2D, 0,x_offset,y_offset,0,0, int(width),int(height));
-}
+
 float Terrain::calc_height(Vector3D pos) {
 	pos -= offset;
-	pos /= 2.0;
+	pos /= TERRAIN_SCALE;
 	int posX = pos.x;
 	int posY = pos.y;
 	const float x = pos.x - posX;
@@ -586,29 +573,30 @@ float Terrain::calc_height(Vector3D pos) {
 	float hmap01, hmap10, hmap11;
 	bool flag = false;
 	if (posX + 1 >= MAP_DIMENSION) {
-		hmap10 = CalcTerHeight(Vector3D((posX + 1) * 2, posY * 2, 0));
+		hmap10 = CalcTerHeight(Vector3D((posX + 1) * TERRAIN_SCALE, posY * TERRAIN_SCALE, 0));
 		flag = true;
 	}
 	else hmap10 = hmap[posX + 1][posY];
 	if (posY + 1 >= MAP_DIMENSION) {
-		hmap01 = CalcTerHeight(Vector3D(posX * 2, (posY + 1) * 2, 0));
+		hmap01 = CalcTerHeight(Vector3D(posX * TERRAIN_SCALE, (posY + 1) * TERRAIN_SCALE, 0));
 		flag = true;
 	}
 	else hmap01 = hmap[posX][posY + 1];
-	if (flag) hmap11 = CalcTerHeight(Vector3D((posX + 1) * 2, (posY + 1) * 2, 0));
+	if (flag) hmap11 = CalcTerHeight(Vector3D((posX + 1) * TERRAIN_SCALE, (posY + 1) * TERRAIN_SCALE, 0));
 	else hmap11 = hmap[posX + 1][posY + 1];
 
 	z += hmap00 * (1.0 - x)*(1.0 - y);
 	z += hmap10 * (x)*(1.0 - y);
 	z += hmap11 * (x)*(y);
 	z += hmap01 * (1.0 - x)*(y);
-	return z;
+	return z * TERRAIN_SCALE / 2.0;
 }
+
 Vector3D Terrain::calc_normal(Vector3D pos) {
 	Vector3D z(0, 0, 0);
 
 	pos -= offset;
-	pos /= 2.0;
+	pos /= TERRAIN_SCALE;
 	int posX = pos.x;
 	int posY = pos.y;
 	const float x = pos.x - posX;
@@ -618,16 +606,16 @@ Vector3D Terrain::calc_normal(Vector3D pos) {
 	Vector3D nmap01, nmap10, nmap11;
 	bool flag = false;
 	if (posX + 1 >= MAP_DIMENSION) {
-		nmap10 = CalcTerNormal(Vector3D((posX + 1) * 2, posY * 2, 0));
+		nmap10 = CalcTerNormal(Vector3D((posX + 1) * TERRAIN_SCALE, posY * TERRAIN_SCALE, 0));
 		flag = true;
 	}
 	else nmap10 = nmap[posX + 1][posY];
 	if (posY + 1 >= MAP_DIMENSION) {
-		nmap01 = CalcTerNormal(Vector3D(posX * 2, (posY + 1) * 2, 0));
+		nmap01 = CalcTerNormal(Vector3D(posX * TERRAIN_SCALE, (posY + 1) * TERRAIN_SCALE, 0));
 		flag = true;
 	}
 	else nmap01 = nmap[posX][posY + 1];
-	if (flag) nmap11 = CalcTerNormal(Vector3D((posX + 1) * 2, (posY + 1) * 2, 0));
+	if (flag) nmap11 = CalcTerNormal(Vector3D((posX + 1) * TERRAIN_SCALE, (posY + 1) * TERRAIN_SCALE, 0));
 	else nmap11 = nmap[posX + 1][posY + 1];
 
 	z += nmap00 * (1.0 - x)*(1.0 - y);
@@ -638,27 +626,31 @@ Vector3D Terrain::calc_normal(Vector3D pos) {
 }
 float Terrain::dist(Vector3D a, Vector3D b) {
 	Vector3D c = b - a;
-	return sqrt(c.x*c.x + c.y*c.y);
+	return sqrt(c.x*c.x + c.y*c.y + c.z * c.z);
 }
 float Terrain::dot(Vector3D a, Vector3D b) {
 	return a * b;
 }
 void Terrain::Draw(){
 	Init();
-	if (!loaded || loading) return;
-	if (Info::GetShader()) {
-		glUseProgram(shaderprogram);
-		setShader();
-	}
+	if (!loadedHM) return;
 
-	Renderer::SetShader(shaderprogram);
+
+	Renderer::SetShader("ground");
 	Renderer::UseMaterial("beach1");
 	Renderer::UseMaterial("mountain1");
 	Renderer::UseMaterial("snow1");
+	Renderer::UseMaterial("grass1");
+	Renderer::UseMaterial("mask1");
+	Renderer::UseMaterial("mask2");
 	Renderer::Process();
 
+	if (Info::GetShader()) {
+		setShader();
+	}
+
 	for (int i = 0; i < listNum; i++) {
-		if (refract) {
+		if (Info::GetRefract()) {
 			if (list_center[i].z > 40.0) continue;
 		}
 		float dst = dist(Camera::getPosition(), list_center[i]);
@@ -667,19 +659,14 @@ void Terrain::Draw(){
 		Vector3D b = Info::GetEyeNormal();
 		b.Normalize();
 		float norm_vec = a*b;
-		if (norm_vec < 0.3 && dst > 192) continue;
-		if (reflect) if (norm_vec < 0.5 && dst > 192) continue;
+		if (norm_vec < 0.1 && dst > 300) continue;
+		if (Info::GetReflect()) if (norm_vec < 0.5 && dst > 192) continue;
 		LoD = 4;
-		if (dst < 128) LoD = 0;
-		//else if (dst > 256) LoD = 1;
-		else if (dst < 380) LoD = 1;
-		//else if(dst > 512) LoD = 4;
-		else if(dst < 1024) LoD = 2; 
-		//else if (dst < 1024) LoD = 3;
-		else if (dst < 4096) LoD = 3;
-		/*else if (dst > 384) LoD = 8;
-		else if (dst > 448) LoD = 9;
-		*/
+		if (dst < 192 * TERRAIN_SCALE / 2) LoD = 0;
+		else if (dst < 380 * TERRAIN_SCALE / 2) LoD = 1;
+		else if (dst < 512 * TERRAIN_SCALE / 2) LoD = 2;
+		else if (dst < 1024 * TERRAIN_SCALE / 2) LoD = 3;
+
 		if (static_lists[i][LoD] == 0) {
 			for (int j = 0; j < LOD_LEVELS; j++) {
 				if (static_lists[i][j] != 0) {
@@ -692,47 +679,61 @@ void Terrain::Draw(){
 		}
 		else glCallList(static_lists[i][LoD]);
 	}
-	/*glEnable(GL_DEPTH_TEST);
-	glBegin(GL_TRIANGLES);
-	float pol_size = 2048;
-	float grid_size = 2048;
-	for (int a = -2048 - 2048 * 10; a <= 4096 + 2048 + 2048 * 10; a += 4096) {
-		for (int b = -2048 - 2048 * 10; b <= 4096 + 2048 + 2048 * 10; b += 4096) {
-			//if (a == 2048 && b == 2048) continue;
-			if (dist(Camera::getPosition(), Vector3D(a, b, 0)) > 1000000) continue;
-			for (float x = -grid_size + a; x < grid_size + a; x += pol_size) {
-				for (float y = -grid_size + b; y < grid_size + b; y += pol_size) {
-					float pol = 20.0;
-					glNormal3f(0, 0, 1);
-					glTexCoord2d(x / pol, y / pol);
-					glVertex3f(x, y, -10);
 
-					glNormal3f(0, 0, 1);
-					glTexCoord2d((x + pol_size) / pol, y / pol);
-					glVertex3f(x + pol_size, y, -10);
-
-					glNormal3f(0, 0, 1);
-					glTexCoord2d(x / pol, (y + pol_size) / pol);
-					glVertex3f(x, y + pol_size, -10);
-
-					glNormal3f(0, 0, 1);
-					glTexCoord2d(x / pol, (y + pol_size) / pol);
-					glVertex3f(x, y + pol_size, -10);
-
-					glNormal3f(0, 0, 1);
-					glTexCoord2d((x + pol_size) / pol, y / pol);
-					glVertex3f(x + pol_size, y, -10);
-
-					glNormal3f(0, 0, 1);
-					glTexCoord2d((x + pol_size) / pol, (y + pol_size) / pol);
-					glVertex3f(x + pol_size, y + pol_size, -10);
-				}
-			}
-		}
-	}
-	glEnd();
-	glDisable(GL_DEPTH_TEST);*/
 	Renderer::DropSettings();
 	glUseProgram(0);
 
+}
+
+
+/*Terrains methods*/
+TerrainList Terrains::list;
+
+Terrains::Terrains() {
+	wait = true;
+}
+
+void Terrains::Init() {
+	for (size_t i = 0; i < list.size(); i++) list[i].first->InitMaterials();
+
+	for (size_t i = 0; i < list.size(); i++) 
+		list[i].first->InitHM();
+
+	if (wait)
+	while (1) {
+		bool finished = true;
+		for (size_t i = 0; i < list.size(); i++) {
+			if (list[i].first->Busy()) {
+				finished = false;
+				break;
+			}
+		}
+		if (finished) break;
+	}
+
+	for (size_t i = 0; i < list.size(); i++)
+		list[i].first->InitCollision();
+
+	if (wait)
+	while (1) {
+		bool finished = true;
+		for (size_t i = 0; i < list.size(); i++) {
+			if (list[i].first->Busy()) {
+				finished = false;
+				break;
+			}
+		}
+		if (finished) break;
+	}
+	wait = false;
+}
+
+void Terrains::Draw() {
+	Init();
+	for (size_t i = 0; i < list.size(); i++) list[i].first->Draw();
+}
+
+void Terrains::AddTerrain(std::string path, Vector3D size, Vector3D location) {
+	auto ter = GetTer(path, size);
+	Terrains::list.push_back(TerrainList::value_type(ter, location));
 }

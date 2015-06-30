@@ -52,8 +52,8 @@ void Grass::Init(){
 	model[4].init("Models/bushes/autumn.obj", "null", "null", "null"/*,0.25*/);
 	model[5].init("Models/bushes/autumn1.obj", "null", "null", "null"/*,0.25*/);
 	model[6].init("Models/bushes/autumn2.obj", "null", "null", "null"/*,0.25*/);
-	//model[7].init("Models/fl3.obj", "null", "null", "null");
-	model[7].init("Models/fern1.obj", "null", "null", "null");
+	model[7].init("Models/fl3.obj", "null", "null", "null");
+	//model[7].init("Models/fern1.obj", "null", "null", "null");
 	grass_num = 101000;
 	offset = 0.0;
 	terNormal = new Vector3D[grass_num];
@@ -67,7 +67,7 @@ void Grass::Init(){
 	grass_init();
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex = LoadTexture("Texture/grass7.png");
+	tex = LoadTexture("Texture/grass4.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
 	tex1 = LoadTexture("Texture/fl2.png");
@@ -82,11 +82,11 @@ void Grass::Init(){
 	tex4 = LoadTexture("Texture/autumn_bush2.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-//	tex5 = LoadTexture("Texture/fl1.png");
-	tex5 = LoadTexture("Texture/plants/fern1.png");
+	tex5 = LoadTexture("Texture/fl1.png");
+//	tex5 = LoadTexture("Texture/plants/fern1.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex6 = LoadTexture("Texture/grass7.png");
+	tex6 = LoadTexture("Texture/grass4.png");
 	shaderprogram = LoadShader("Shaders/grass.vert", "Shaders/grass.frag");
 }
 float rnd() {
@@ -96,8 +96,8 @@ void Grass::grass_init() {
 	for (int i = 0; i < grass_num; i++) {
 		while (1) {
 			Vector3D data;
-			data.x = ((rand() % 40900) / 5.0);
-			data.y = ((rand() % 40900) / 5.0);
+			data.x = float(rand()) * float(rand() % 10 + 1);
+			data.y = float(rand()) * float(rand() % 10 + 1);
 			data.z = CalcTerHeight(Vector3D(data.x, data.y, 0.0));
 			Vector3D ter_normal = CalcTerNormal(Vector3D(data.x, data.y, 0.0));
 			ter_normal /= ter_normal*ter_normal;
@@ -119,11 +119,11 @@ void Grass::grass_init() {
 			else if (r > 80 && r < 95) type[i] = 1;
 			//	}
 			//if(r > 82 && r < 95) type[i] = 1;			
-			if (distance(Vector3D(2800, 750, 0), grass[i]) < 400 || distance(Vector3D(1800, 630, 0), grass[i]) < 300 || distance(Vector3D(1100, 980, 0), grass[i]) < 200 || distance(Vector3D(500, 1700, 0), grass[i]) < 500) {
-				if (r == 95)type[i] = 2;
+			//if (distance(Vector3D(2800, 750, 0), grass[i]) < 400 || distance(Vector3D(1800, 630, 0), grass[i]) < 300 || distance(Vector3D(1100, 980, 0), grass[i]) < 200 || distance(Vector3D(500, 1700, 0), grass[i]) < 500) {
+				else if (r == 95)type[i] = 2;
 				else if (r == 96)type[i] = 3;
 				else if (r == 97)type[i] = 4;
-			}
+			//}
 			if (type[i] != 0) grass[i].z--;
 			angle[i] = rnd()*360.0;
 			cadr[i] = (data.x + data.y) / 100.0;
@@ -261,7 +261,7 @@ void Grass::Draw() {
 	vector<int> number;
 	float newgrass_size = 0;
 	float yaw = 0.0;
-	if (!Info::GetShader() || Terrain::refract || Terrain::reflect) yaw = 3.0;
+	if (!Info::GetShader() || Info::GetRefract() || Info::GetReflect()) yaw = 3.0;
 	if (Info::GetShader()) {
 		glUseProgram(shaderprogram);
 		setShader();
@@ -364,7 +364,7 @@ void Grass::Draw() {
 			glUniform1i(u_model0, 12);
 			glUniform1i(u_type0, 1);
 			glTranslated(0, 0, 0.3);
-			//	model[4].draw();
+				model[4].draw();
 			glTranslated(0, 0, -0.3);
 			samples += 2936;
 		}
@@ -372,7 +372,7 @@ void Grass::Draw() {
 			glUniform1i(u_model0, 13);
 			glUniform1i(u_type0, 1);
 			glTranslated(0, 0, 0.3);
-			//	model[5].draw();
+				model[5].draw();
 			glTranslated(0, 0, -0.3);
 			samples += 2936;
 		}
@@ -380,7 +380,7 @@ void Grass::Draw() {
 			glUniform1i(u_model0, 14);
 			glUniform1i(u_type0, 1);
 			glTranslated(0, 0, 0.3);
-			//	model[6].draw();
+				model[6].draw();
 			glTranslated(0, 0, -0.3);
 			samples += 2936;
 		}

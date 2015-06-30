@@ -291,6 +291,7 @@
     <ClInclude Include="Objects\Ocean\misc.h" />
     <ClInclude Include="Objects\Ocean\Ocean.h" />
     <ClInclude Include="Objects\Ocean\vector.h" />
+    <ClInclude Include="Objects\Plane\Plane.h" />
     <ClInclude Include="Objects\Star\Star.h" />
     <ClInclude Include="Objects\Stone\Stone.h" />
     <ClInclude Include="Objects\Terrain\Terrain.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="Objects\Ocean\misc.cc" />
     <ClCompile Include="Objects\Ocean\Ocean.cpp" />
     <ClCompile Include="Objects\Ocean\vector.cc" />
+    <ClCompile Include="Objects\Plane\Plane.cpp" />
     <ClCompile Include="Objects\Star\Star.cpp" />
     <ClCompile Include="Objects\Stone\Stone.cpp" />
     <ClCompile Include="Objects\Terrain\Terrain.cpp" />

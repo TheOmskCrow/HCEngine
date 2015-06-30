@@ -191,7 +191,7 @@ void Butterfly::Draw() {
         //        but = qSort(but,0,but_num-1);
 				//TODO: define yaw as identifier in Info
 				float yaw = 0;
-				if (!Info::GetShader() || Terrain::refract || Terrain::reflect) yaw = 3.0;
+				if (!Info::GetShader() || Info::GetRefract() || Info::GetReflect()) yaw = 3.0;
 				if(Info::GetShader()) {
 					glUseProgram(shaderprogram);
 					setShader();
