@@ -4,14 +4,14 @@
 #include <map>
 #include <hc3dContentLoader.h>
 #include <hc3dMath.h>
-#include <dllmain.h>
-#include <Material.h>
-#include <ShaderLib.h>
+#include <dllstorage.h>
+#include "../Storage/Material.h"
+#include "../Storage/ShaderLib.h"
 #include <Control\Camera.h>
 #include <Control\Info.h>
 
 namespace hc3d {
-	class HC3D_API Renderer
+	class HC3DSTORAGE_API Renderer
 	{
 	public:
 		static void SetShader(const char* name);

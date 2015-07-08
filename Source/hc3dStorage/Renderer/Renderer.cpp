@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Renderer.h"
 
 #define MAX_MATERIALS 16
