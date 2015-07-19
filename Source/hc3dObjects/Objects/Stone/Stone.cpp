@@ -132,7 +132,7 @@ void Stone::Stone_init() {
 	angle = new Vector3D[Stone_num];
 	cadr = new float[Stone_num];
 	gr_size = new Vector3D[Stone_num];
-	matrix = new int[Stone_num];
+	matrix.resize(Stone_num);
 	for (int i = 0; i < Stone_num; i++) {
 		float x, y, z, rotX, rotY, rotZ, scX, scY, scZ;
 		int modelNum;

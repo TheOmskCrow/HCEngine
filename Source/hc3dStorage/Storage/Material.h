@@ -1,4 +1,5 @@
 #pragma once
+#include "../dllstorage.h"
 #include <map>
 #include <string>
 #include "hc3dContentLoader.h"
@@ -8,7 +9,7 @@ namespace hc3d {
 #define NONE 0
 #define ATMOSPHERE 1
 
-	class HC3D_API Material
+	class HC3DSTORAGE_API Material
 	{
 		friend class Renderer;
 	public:
@@ -54,7 +55,7 @@ namespace hc3d {
 	typedef std::map<std::string, Material> Materials;
 	typedef std::map<GLuint, bool> GLuintMap;
 
-	class HC3D_API MatLib{
+	class HC3DSTORAGE_API MatLib{
 		friend class Material;
 	private:
 		static Materials materials;

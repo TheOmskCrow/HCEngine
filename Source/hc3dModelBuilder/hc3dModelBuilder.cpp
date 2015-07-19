@@ -365,7 +365,7 @@ int Model::init(const char* name, char* texture_name, char* normal_map_name, cha
 	}
 	mdl_pos = Vector3D(0, 0, 0);
 	mdl_center = Vector3D(0, 0, 0);
-	if (mdl_scale == 0.0) mdl_scale = 0.03;
+	if (mdl_scale == 0.0) mdl_scale = 1.0;
 	load_m = false, mdl_change = true;
 	remove("output.mdl");
 	convert(name);
@@ -380,6 +380,7 @@ int Model::init(const char* name, char* texture_name, char* normal_map_name, cha
 	vertex = new float[size * 3];
 	for (int i = 0; i < size * 3; i++) {
 		file >> vertex[i];
+		vertex[i] *= mdl_scale;
 	}
 	file >> size;
 	vertex_n_size = size * 3;
@@ -402,7 +403,7 @@ int Model::init(const char* name, char* texture_name, char* normal_map_name, cha
 	return 0;
 }
 
-int Model::addCollision(Vector3D translation, Vector3D rotation, Vector3D scale, bool isStatic) {
+BodyData* Model::addCollision(Vector3D translation, Vector3D rotation, Vector3D scale, bool isStatic) {
 	std::vector<Vector3D> vertexList;
 
 	for (int i = 0; i < collisionFacesNum; i += 9) {
@@ -411,7 +412,7 @@ int Model::addCollision(Vector3D translation, Vector3D rotation, Vector3D scale,
 		vertexList.push_back(Vector3D(collisionVertex[(collisionFaces[i + 6] - 1) * 3], collisionVertex[(collisionFaces[i + 6] - 1) * 3 + 1], collisionVertex[(collisionFaces[i + 6] - 1) * 3 + 2]));
 	}
 
-	int res = Collision::AddBody(scale, translation, rotation, mass, vertexList, isStatic); 
+	BodyData* res = Collision::AddBody(scale, translation, rotation, mass, vertexList, isStatic);
 
 	vertexList.clear();
 	return res;

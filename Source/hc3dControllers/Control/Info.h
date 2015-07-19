@@ -72,10 +72,14 @@ namespace hc3d {
 		static void DropMessages();
 		static int GetPlaneState();
 		static void SetVehSpeed(float);
+		static Vector3D GetForestLocation();
+		static float GetCoeff();
+		static float GetCoeff1();
 	public:
 		static float vehSpeed;
 		static GLuint curBindTexture;
 		static float latitude;
+		static Vector3D forestLocation;
 		static float longitude;
 		static float shadowDist;
 		static int planeState;
@@ -129,6 +133,8 @@ namespace hc3d {
 		static ConsoleWord cur_word;
 		static ConsoleLine cur_line;
 		static ConsoleText console_output;
+		static float coeff;
+		static float coeff1;
 	private:
 		static bool atmosphereRun;
 		static void render_fps(int, int, int, int);

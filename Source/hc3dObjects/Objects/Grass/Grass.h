@@ -24,6 +24,7 @@ namespace hc3d {
 		float distance(const Vector3D &a, const Vector3D &b);
 		void grass_init();
 		void setShader();
+		void CalcGrassType(int);
 	public:
 		static float windWave;
 		static Vector3D windCenter;

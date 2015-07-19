@@ -61,12 +61,13 @@ void SandBox::Init() {
 
 	objects.push_back(GetTerrain());
 	objects.push_back(GetGrass());
-	//objects.push_back(GetBut());
 //	objects.push_back(GetOcean());
 //	for (int i = 0; i < 10; i++) objects.push_back(GetFish());
 	gWater = GetWater();
 	shadowingObjects.push_back(GetTrees());
 	shadowingObjects.push_back(GetClouds());
+	shadowingObjects.push_back(GetBut());
+	
 //	shadowingObjects.push_back(GetPlane());
 	
 
@@ -100,7 +101,7 @@ void SandBox::Draw() {
 //		shadowingObjects.push_back(gStone);
 	//	shadowingObjects.push_back(objects[2]);
 		shadowingObjects.CreateShadows();
-		shadowingObjects.pop_back();
+		//shadowingObjects.pop_back();
 	}
 	GLenum err = glGetError();
 	//if (err) std::cout << "(shadow.draw) GL error : " << err << std::endl;
@@ -115,7 +116,7 @@ void SandBox::Draw() {
 	//rolling = Vector3D(Camera::pitch*-sin(Camera::roll), Camera::pitch*-cos(Camera::roll), 1);
 
 
-	gluPerspective(60, widthHeightRatio, 500.0*Info::global_scale, 5000000000.0*Info::global_scale);
+	gluPerspective(60, widthHeightRatio, 5000.0*Info::global_scale, 50000000000.0*Info::global_scale);
 	Info::eye_normal = Vector3D(cos(Camera::yaw)*cos(Camera::pitch), sin(Camera::yaw)*cos(Camera::pitch), sin(Camera::pitch));
 	Vector3D position = Camera::getPosition();
 	Vector3D eyePosition = position;
@@ -254,10 +255,26 @@ void SandBox::KeyPress(unsigned char key, int lparam, int rparam) {
 	//else if (key == 'l' || key == 'L') light_draw = true;
 	else if (key == 'd' || key == 'D') Camera::god = true;
 	else if (key == '0' || key == ')') Info::planeState = 0;
-	else if (key == '1' || key == '!') Info::planeState = 1;
+	else if (key == '1' || key == '!') {
+		Info::coeff *= 1.1;
+		std::cout << "coeff = " << Info::coeff << std::endl;
+	}
+	else if (key == '2' || key == '@') {
+		Info::coeff /= 1.1;
+		std::cout << "coeff = " << Info::coeff << std::endl;
+	}
+	else if (key == '3' || key == '#') {
+		Info::coeff1 *= 1.1;
+		std::cout << "coeff1 = " << Info::coeff1 << std::endl;
+	}
+	else if (key == '4' || key == '$') {
+		Info::coeff1 /= 1.1;
+		std::cout << "coeff1 = " << Info::coeff1 << std::endl;
+	}
+	/*else if (key == '1' || key == '!') Info::planeState = 1;
 	else if (key == '2' || key == '@') Info::planeState = 2;
 	else if (key == '3' || key == '#') Info::planet_z += 100;
-	else if (key == '4' || key == '$') Info::planet_z -= 100;
+	else if (key == '4' || key == '$') Info::planet_z -= 100;*/
 	//else if (key == '5' || key == '%') cloud_offset.y += 10;
 	//else if (key == '6' || key == '^') cloud_offset.y -= 10;
 	else if (key == '7' || key == '&') Camera::PLAYER_SPEED *= 1.1;
@@ -293,6 +310,7 @@ void SandBox::KeyRelease(unsigned char key, int lparam, int rparam) {
 	else if (key == 'd' || key == 'D') Camera::god = false;
 	else if (key == ' ') Info::jet_gas = false;
 	else if (key == 'c' || key == 'C') Info::jet_stop = false;
+	
 	//else if (key == 'l' || key == 'L') light_draw = false;
 }
 

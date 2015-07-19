@@ -63,6 +63,10 @@ TerrainHF::TerrainHF() {
 
 }
 
+BodyData::BodyData() {
+
+}
+
 Collision::Collision(void)
 {
 
@@ -104,6 +108,14 @@ void Collision::DeleteTerrain(TerrainHF *terrain) {
 	delete terrain;
 }
 
+void Collision::DeleteBody(BodyData *data) {
+	if (data == nullptr)
+		return;
+	dynamicsWorld->removeRigidBody(data->body);
+	delete data->body;
+	delete data->myMotionState;
+	delete data;
+}
 TerrainHF * Collision::AddTerrain(int size, float* heightfield, Vector3D offset) {
 	TerrainHF *ter = new TerrainHF();
 	ter->heightfield = heightfield;
@@ -180,7 +192,7 @@ void Collision::Init() {
 		playerShape->calculateLocalInertia(pmass, plocalInertia);
 		btTransform playerTransform;
 		playerTransform.setIdentity();
-		playerTransform.setOrigin(btVector3(-1000, -1000, 310));
+		playerTransform.setOrigin(btVector3(4000, 4000, 50));
 
 		btDefaultMotionState* pMotionState = new btDefaultMotionState(playerTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
 		btRigidBody::btRigidBodyConstructionInfo prbInfo(pmass, pMotionState, playerShape, plocalInertia);
@@ -274,8 +286,9 @@ void Collision::AddVehicle() {
 	btRigidBody::btRigidBodyConstructionInfo prbInfo(pmass, pMotionState, chassisShape, plocalInertia);
 }
 
-int Collision::AddBody(Vector3D size, Vector3D position, Vector3D rotation, btScalar mass, std::vector<Vector3D> vertexList, bool isStatic) {
+BodyData* Collision::AddBody(Vector3D size, Vector3D position, Vector3D rotation, btScalar mass, std::vector<Vector3D> vertexList, bool isStatic) {
 	//btConvexHullShape *tmp = new btConvexHullShape();
+	BodyData *data = new BodyData();
 	btCollisionShape* boxShape;
 	btVector3 localInertia(0, 0, 0);
 	if (isStatic) {
@@ -309,6 +322,7 @@ int Collision::AddBody(Vector3D size, Vector3D position, Vector3D rotation, btSc
 		boxShape->calculateLocalInertia(mass, localInertia);
 	}
 
+	data->shape = boxShape;
 	btTransform startTransform;
 	startTransform.setIdentity();
 	/*	if (isStatic) {
@@ -336,15 +350,16 @@ int Collision::AddBody(Vector3D size, Vector3D position, Vector3D rotation, btSc
 	startTransform.setRotation(rotationTransform);
 	//	}
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	data->myMotionState = myMotionState;
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
 	btRigidBody* body = new btRigidBody(rbInfo);
-	objects.push_back(body);
+	data->body = body;
 	//body->setRestitution(0.0);
 	//mPlayerObject->setAngularFactor(btVector3(0, 0, 1));
 	//body->setFriction(0.5);
 	body->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(body);
-	return objects.size() - 1;
+	return data;
 }
 
 void Collision::AddRigidBox(Vector3D size, Vector3D position, btScalar mass) {
@@ -582,6 +597,15 @@ btScalar* Collision::GetObjectMatrix(int i) {
 
 
 	objects[i]->getWorldTransform().getOpenGLMatrix(m);
+
+	return m;
+}
+
+btScalar* Collision::GetObjectMatrix(BodyData* i) {
+	btScalar *m = new btScalar[16];
+	btTransform t;
+	btMatrix3x3	rot; rot.setIdentity();
+	i->body->getWorldTransform().getOpenGLMatrix(m);
 
 	return m;
 }

@@ -6,6 +6,7 @@
 #define YBORDER 20
 #define XBORDER 10
 #define STRSIZE 30.0
+#define LOOP_WINDOW 3100
 
 using namespace std;
 using namespace hc3d;
@@ -83,6 +84,17 @@ std::vector<std::string> Info::messages;
 std::vector<Vector3D> Info::messageColors;
 std::vector<float> Info::messageLife;
 float Info::vehSpeed = 0.0f;
+Vector3D Info::forestLocation = Vector3D(0,0,0);
+float Info::coeff = 0.03;
+float Info::coeff1 = 0.035;
+
+float Info::GetCoeff() {
+	return coeff;
+}
+
+float Info::GetCoeff1() {
+	return coeff1;
+}
 
 void Info::SetVehSpeed(float khSpeed) {
 	vehSpeed = khSpeed;
@@ -435,7 +447,27 @@ Info::~Info(void)
 {
 }
 
+Vector3D Info::GetForestLocation() {
+	return forestLocation;
+}
+
 void Info::run(int w,int h) {
+	Vector3D player = Camera::getPosition();
+	auto dst = dist(player, forestLocation);
+	if (dst > LOOP_WINDOW) {
+		if (forestLocation.x - player.x < -LOOP_WINDOW) {
+			forestLocation.x += LOOP_WINDOW * 2.0;
+		}
+		if (forestLocation.y - player.y < -LOOP_WINDOW) {
+			forestLocation.y += LOOP_WINDOW * 2.0;
+		}
+		if (forestLocation.x - player.x > LOOP_WINDOW) {
+			forestLocation.x -= LOOP_WINDOW * 2.0;
+		}
+		if (forestLocation.y - player.y > LOOP_WINDOW) {
+			forestLocation.y -= LOOP_WINDOW * 2.0;
+		}
+	}
 	elapsed_time = float(time_frame)/100.0;
 	if (wait > 0.0) {
 		elapsed_time += 30.0;

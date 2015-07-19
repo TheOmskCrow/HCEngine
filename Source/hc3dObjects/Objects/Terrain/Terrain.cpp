@@ -4,9 +4,10 @@
 #include <hc3dContentLoader.h>
 #include <hc3dToolkit.h>
 #include <hc3dObjects.h>
+#include <hc3dStorage.h>
 #include <hc3dMath.h>
-#include "Material.h"
-#include "ShaderLib.h"
+#include "Storage/Material.h"
+#include "Storage/ShaderLib.h"
 //#include "Collision.h"
 #include <iostream>
 #include <thread>
@@ -19,8 +20,8 @@
 
 #define TEXEL_SIZE 64
 #define MAP_DIMENSION 512
-#define LOD_LEVELS 4
-#define VISIBILITY_THRESHOLD 8000
+#define LOD_LEVELS 6
+#define VISIBILITY_THRESHOLD 6000
 #define ACCESSIBILITY_THRESHOLD 1000
 #define TERRAIN_SCALE 2
 
@@ -34,6 +35,15 @@ Terrain::Terrain(std::string mapName, Vector3D offset) {
 	this->mapName = mapName;
 	this->offset = offset;
 	pol = 20;
+	listNum = MAP_DIMENSION * MAP_DIMENSION / TEXEL_SIZE / TEXEL_SIZE;
+	long lSize;
+	static_lists = new int*[listNum];
+	for (int i = 0; i < listNum; i++) {
+		static_lists[i] = new int[LOD_LEVELS];//64x64 6 levels
+		for (int j = 0; j < LOD_LEVELS; j++) {
+			static_lists[i][j] = 0;
+		}
+	}
 	loadedHM = false;
 	loadedCol = false;
 	busy = false;
@@ -118,7 +128,7 @@ void Terrain::InitMaterials() {
 		Material mat;
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
-		mat.SetDiffuse("Texture/hei1.png", Vector3D(0.5f, 0.5f, 0.5f), 5000.0f);
+		mat.SetDiffuse("Texture/hei1.png", Vector3D(0.5f, 0.5f, 0.5f), 4000.0f);
 		mat.SetAmbient(NONE);
 
 		MatLib::Add("mask1", mat);
@@ -127,7 +137,7 @@ void Terrain::InitMaterials() {
 		Material mat;
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
-		mat.SetDiffuse("Texture/height2.png", Vector3D(0.5f, 0.5f, 0.5f), 5000.0f);
+		mat.SetDiffuse("Texture/height2.png", Vector3D(0.5f, 0.5f, 0.5f), 4000.0f);
 		mat.SetAmbient(NONE);
 		MatLib::Add("mask2", mat);
 	}
@@ -248,7 +258,7 @@ void Terrain::InitCache(std::string normalMapName, std::string heightMapName) {
 			//z += C * 256;
 			memcpy(&C, tbmpbuffer + tBMP.bfOffBits + 2 + i * 3 + MAP_DIMENSION*j * 3, 1);
 			z += C;
-			tmp[i][j] = z * 2.0 - 5.0;
+			tmp[i][j] = z * 4.0 - 5.0;
 			if (tmp[i][j] < 0.0) tmp[i][j] -= 2.0;
 			else tmp[i][j] += 2.0;
 			hmap[i][j] = 0;//+(rand()%1000)/1000.0-1.0;
@@ -256,8 +266,8 @@ void Terrain::InitCache(std::string normalMapName, std::string heightMapName) {
 			z = 0.0;
 		}
 	}
-	const int core = 1;
-	const float coeff = 9.0;
+	const int core = 2;
+	const float coeff = (core * 2.0 + 1) * (core * 2.0 + 1);
 	for(int i=0;i<MAP_DIMENSION;i++)
 	for (int j = 0; j < MAP_DIMENSION; j++)
 	{
@@ -350,15 +360,7 @@ void Terrain::LoadHM() {
 	std::string normalMapName = mapName + std::string(".normal");
 	std::string heightMapName = mapName + std::string(".height");
 
-	listNum = MAP_DIMENSION * MAP_DIMENSION / TEXEL_SIZE / TEXEL_SIZE;
 	long lSize;
-	static_lists = new int*[listNum];
-	for (int i = 0; i < listNum; i++) {
-		static_lists[i] = new int[LOD_LEVELS];//64x64 6 levels
-		for (int j = 0; j < LOD_LEVELS; j++) {
-			static_lists[i][j] = 0;
-		}
-	}
 	list_center = new Vector3D[listNum];//numbers -> variables
 	hmap = new float*[MAP_DIMENSION];
 	nmap = new Vector3D*[MAP_DIMENSION];
@@ -442,9 +444,7 @@ void Terrain::DeleteHM() {
 				glDeleteLists(static_lists[i][j], 1);
 			}
 		}
-		delete[] static_lists[i];
 	}
-	delete[] static_lists;
 
 	for (int i = 0; i < MAP_DIMENSION; i++) {
 		delete[] hmap[i];
@@ -486,7 +486,7 @@ void Terrain::LodGenerate(int num, int level) {
 		j_end = Math::hc3dMin(MAP_DIMENSION, j_end + level);
 	}
 
-	float size = TERRAIN_SCALE; 
+	float size = TERRAIN_SCALE;
 	static_lists[num][level] = glGenLists(1);
 	glNewList(static_lists[num][level], GL_COMPILE);
 	level = int(pow(2.0, level));
@@ -633,7 +633,7 @@ float Terrain::dot(Vector3D a, Vector3D b) {
 }
 void Terrain::Draw(){
 	Init();
-	if (!loadedHM) return;
+	if (!loadedHM || static_lists == 0) return;
 
 
 	Renderer::SetShader("ground");
@@ -659,13 +659,14 @@ void Terrain::Draw(){
 		Vector3D b = Info::GetEyeNormal();
 		b.Normalize();
 		float norm_vec = a*b;
-		if (norm_vec < 0.1 && dst > 300) continue;
+		if (norm_vec < 0.1 && dst > 500) continue;
 		if (Info::GetReflect()) if (norm_vec < 0.5 && dst > 192) continue;
-		LoD = 4;
+		LoD = 5;
 		if (dst < 192 * TERRAIN_SCALE / 2) LoD = 0;
 		else if (dst < 380 * TERRAIN_SCALE / 2) LoD = 1;
 		else if (dst < 512 * TERRAIN_SCALE / 2) LoD = 2;
 		else if (dst < 1024 * TERRAIN_SCALE / 2) LoD = 3;
+		else if (dst < 5000 * TERRAIN_SCALE / 2) LoD = 4;
 
 		if (static_lists[i][LoD] == 0) {
 			for (int j = 0; j < LOD_LEVELS; j++) {
@@ -682,7 +683,6 @@ void Terrain::Draw(){
 
 	Renderer::DropSettings();
 	glUseProgram(0);
-
 }
 
 

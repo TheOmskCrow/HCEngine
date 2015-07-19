@@ -8,6 +8,7 @@
 #include "../Water/Water.h"
 
 #define GROUND_OFFSET 0.2
+#define BUT_WINDOW 500
 
 using namespace hc3d;
 
@@ -52,7 +53,7 @@ void Butterfly::Init(){
 //		model[0].init("Models/but1.obj","null","null","null");
 //		model[1].init("Models/but2.obj","null","null","null");
 //		model[2].init("Models/but3.obj","null","null","null");
-        but_num = 5000;
+        but_num = 1000;
         offset = 0.0;
         but = new Vector3D[but_num];
 		angle = new float[but_num];
@@ -66,8 +67,9 @@ void Butterfly::Init(){
 		size = new float[but_num];
 		but_yaw = new float[but_num];
 		rotating = new bool[but_num];
+		drawable = new bool[but_num];
 		rotate_angle = new float[but_num];
-        but_init();
+        ButsInit();
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
 		tex = LoadTexture("Texture/butter.png");
@@ -79,38 +81,58 @@ void Butterfly::Init(){
 float Butterfly::rnd() {
     return float(rand()%100000)/100000.0;
 }
-void Butterfly::but_init(){
+
+void Butterfly::ButReset(int i){
+	Vector3D data;
+	Vector3D player = Camera::getPosition();
+	if (but[i].x - player.x < -BUT_WINDOW) {
+		but[i].x += BUT_WINDOW * 2.0;
+	}
+	if (but[i].y - player.y < -BUT_WINDOW) {
+		but[i].y += BUT_WINDOW * 2.0;
+	}
+	if (but[i].x - player.x > BUT_WINDOW) {
+		but[i].x -= BUT_WINDOW * 2.0;
+	}
+	if (but[i].y - player.y > BUT_WINDOW) {
+		but[i].y -= BUT_WINDOW * 2.0;
+	}
+	data = but[i];
+	data.z = CalcTerHeight(Vector3D(data.x, data.y, 0.0));
+	float but_coeff = hc3d::Math::hc3dMax(0.0, hc3d::Math::hc3dMin(1.0, (CalcTerNormal(Vector3D(data.x, data.y, 0.0))*Vector3D(0.0, 0.0, 1.0))));
+	but_coeff -= 0.975;
+	but_coeff *= 40.0;
+	data.z += 4.0;
+	but[i].z = data.z;
+	if (data.z < 6.0 || data.z > 200.0) drawable[i] = false;
+	else drawable[i] = true;
+	sitting[i] = false;
+	reverse[i] = false;
+	but_yaw[i] = 45.0;
+	rotating[i] = false;
+}
+
+
+void Butterfly::ButInit(int i){
+	Vector3D data;
+	data.x = ((rand() % 40900) / 10.0);
+	data.y = ((rand() % 40900) / 10.0);
+	but[i] = data;
+
+	ButReset(i);
+
+	angle[i] = rnd()*360.0;
+	cadr[i] = rnd()*360.0;
+	size[i] = float(rand() % 1000) / 1000.0 + 0.3;
+	blink_speed[i] = (1.3 - size[i] + 0.3)*2.0;
+	hue[i] = rnd();
+	gr_size[i] = rnd();
+	if (gr_size[i] < 0.25) hue_speed[i] = rnd() / 10.0;
+	else hue_speed[i] = 0.0;
+}
+void Butterfly::ButsInit(){
         for(int i = 0; i < but_num; i++) {
-			while(1) {
-            Vector3D data;
-            data.x = ((rand()%40900)/10.0);
-            data.y = ((rand()%40900)/10.0);
-			data.z = CalcTerHeight(Vector3D(data.x, data.y, 0.0));
-			float but_coeff = hc3d::Math::hc3dMax(0.0, hc3d::Math::hc3dMin(1.0, (CalcTerNormal(Vector3D(data.x, data.y, 0.0))*Vector3D(0.0, 0.0, 1.0))));
-			but_coeff -= 0.975;
-			but_coeff *= 40.0;
-			data.z += 4.0;
-            but[i] = data;
-			sitting[i] = false;
-			reverse[i] = false;
-			but_yaw[i] = 45.0;
-			rotating[i] = false;
-			data.z -= 4.0;
-			angle[i] = rnd()*360.0;
-            cadr[i] = rnd()*360.0;
-			size[i] = float(rand()%1000)/1000.0 + 0.3;
-			//std::cout << size[i] << " ";
-			blink_speed[i] = (1.3 - size[i] + 0.3)*2.0;
-			//std::cout << blink_speed[i] << std::endl;
-			hue[i] = rnd();
-			gr_size[i] = rnd();
-			if(gr_size[i] < 0.25) hue_speed[i] = rnd() / 10.0;
-			else hue_speed[i] = 0.0;
-			if(data.z < 120.0 && data.z > 6.0) {
-			//	printf("x = %.2f y = %.2f z = %.2f\n",data.x,data.y,data.z);
-				break; 
-			}
-			}
+			ButInit(i);
         }
     }
 void Butterfly::setShader() {
@@ -188,20 +210,12 @@ void Butterfly::setShader() {
 				shaderprogram, "eyeNorm"), Info::GetEyeNormal().x, Info::GetEyeNormal().y, Info::GetEyeNormal().z);
 }
 void Butterfly::Draw() {
+				bool tmp = Info::GetShader();
         //        but = qSort(but,0,but_num-1);
 				//TODO: define yaw as identifier in Info
 				float yaw = 0;
 				if (!Info::GetShader() || Info::GetRefract() || Info::GetReflect()) yaw = 3.0;
-				if(Info::GetShader()) {
-					glUseProgram(shaderprogram);
-					setShader();
-				}
-				bool tmp = Info::GetShader();
-				Info::SetShader(false);
-				glEnable(GL_DEPTH_TEST);
-                glEnable(GL_ALPHA_TEST);
-                glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+				
                 //glDepthMask(false);
 				if(yaw == 0) offset+=(rnd()/5.0 + 0.05)*Info::GetElapsedTime();
                 float pi = 3.141592;
@@ -210,7 +224,7 @@ void Butterfly::Draw() {
                 for(int i = 0; i < but_num; i++) {
 					//AI
 					float dst = distance(but[i], player);
-					if(dst > 400.0) continue;
+					if (dst > BUT_WINDOW) ButReset(i);
 					if (yaw == 0) {
 						hue[i] += hue_speed[i] * Info::GetElapsedTime();
 						if (hue[i] > 1.0) hue[i] -= 1.0;
@@ -270,8 +284,18 @@ void Butterfly::Draw() {
 					if (dst < 25.0 && (Camera::GetCamSpeed() * Camera::GetCamSpeed()) != 0.0) sitting[i] = false; //more reason to scare butters
 					//end AI
 					
+					if (dst > BUT_WINDOW / 2 || !drawable[i]) continue;
+
+					if (Info::GetShader()) {
+						glUseProgram(shaderprogram);
+						setShader();
+					}
 					
-					if(dst > 300.0) continue;
+					Info::SetShader(false);
+					glEnable(GL_DEPTH_TEST);
+					glEnable(GL_ALPHA_TEST);
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					Vector3D a = but[i] - Camera::getPosition();
 					a.Normalize();
 					Vector3D b = Info::GetEyeNormal();
@@ -358,6 +382,7 @@ void Butterfly::Draw() {
 				glDisable(GL_DEPTH_TEST);
                 glDisable(GL_ALPHA_TEST);
                 glDisable(GL_BLEND);
+				
 				Info::SetShader(tmp);
 				if(Info::GetShader())  glUseProgram(0);
 }

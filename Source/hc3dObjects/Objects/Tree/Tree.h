@@ -7,6 +7,7 @@ namespace hc3d {
 	class Tree : public Object{
 	private:
 		Model *model;
+		std::vector<BodyData*> matrix;
 		GLuint shaderprogram, shaderprogram1, tex, tex1, tex2, tex3;
 		int vert_shader, frag_shader;
 		int Tree_num;

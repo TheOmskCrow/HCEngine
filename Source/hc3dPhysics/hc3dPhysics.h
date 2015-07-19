@@ -25,6 +25,15 @@ namespace hc3d {
 		btRigidBody* body;
 	};
 
+	class HC3DPHYSICS_API BodyData
+	{
+	public:
+		BodyData();
+		btCollisionShape* shape;
+		btDefaultMotionState* myMotionState;
+		btRigidBody* body;
+	};
+
 	class HC3DPHYSICS_API Collision
 	{
 	public:
@@ -33,10 +42,11 @@ namespace hc3d {
 		static void Init();
 		static TerrainHF *AddTerrain(int size, float *heightfield, Vector3D offset);
 		static void DeleteTerrain(TerrainHF * terrain);
+		static void DeleteBody(BodyData *data);
 		static void ResolveCollision();
 		static void AddRigidBox(Vector3D size, Vector3D position, btScalar mass);
 		static void AddRigidSphere(Vector3D size, Vector3D position, btScalar mass);
-		static int AddBody(Vector3D size, Vector3D position, Vector3D rotation, btScalar mass, std::vector<Vector3D> vertexList, bool isStatic = true);
+		static BodyData* AddBody(Vector3D size, Vector3D position, Vector3D rotation, btScalar mass, std::vector<Vector3D> vertexList, bool isStatic = true);
 		static void AddVehicle();
 		static void BindCamera(int objectID);
 		static Vector3D GetVehiclePosition();
@@ -44,6 +54,7 @@ namespace hc3d {
 		static void Explode(Vector3D point, float force);
 
 		static btScalar* GetObjectMatrix(int i);
+		static btScalar* GetObjectMatrix(BodyData* i);
 		static void Keyboard(int key, int x, int y);
 		static void KeyboardUp(int key, int x, int y);
 		static void specialKeyboard(int key, int x, int y);

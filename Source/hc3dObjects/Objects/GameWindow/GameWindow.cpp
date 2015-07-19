@@ -155,6 +155,10 @@ void GameWindow::setShader(float width, float height){
 	        		shaderprogram, "rnd_y"), (rand()%1000)/1000.0);
 	        glUniform1f(glGetUniformLocation(
 	        		shaderprogram, "Width"), width);
+			glUniform1f(glGetUniformLocation(
+				shaderprogram, "coeff"), Info::GetCoeff());
+			glUniform1f(glGetUniformLocation(
+				shaderprogram, "coeff1"), Info::GetCoeff1());
 	        glUniform1f(glGetUniformLocation(
 	        		shaderprogram, "Height"), height);
 	        glUniform4f(glGetUniformLocation(
@@ -265,11 +269,12 @@ void GameWindow::Draw() {
 				float ww = 1.0;// 2048.0 / Info::width();
 				
 				float hh = 1.0;// 2048.0 / Info::height();
-				/*
+				
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, cloud1);
 				glUseProgram(shaderprogram7);
 				glUniform1i(glGetUniformLocation(
 	        		shaderprogram7, "tex"), 3);
@@ -314,9 +319,8 @@ void GameWindow::Draw() {
 
 				glActiveTexture(GL_TEXTURE30);
 				glBindTexture(GL_TEXTURE_2D,abberation);
-				glCopyTexSubImage2D(GL_TEXTURE_2D, 0, x_offset,y_offset,0, 0,int(width),int(height));
-			
-				*/
+				glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, int(width), int(height), 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				//SSAO
 
 

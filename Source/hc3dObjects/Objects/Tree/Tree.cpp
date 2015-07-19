@@ -7,6 +7,8 @@
 #include "hc3dMath.h"
 #include "../Water/Water.h"
 
+#define TREE_WINDOW 2500
+#define FOREST_SIZE 800
 using namespace hc3d;
 using namespace std;
 
@@ -87,6 +89,7 @@ void Tree::Init(){
 		gr_size = new float[Tree_num];
 		gr_width = new float[Tree_num];
 		type = new float[Tree_num];
+		matrix.resize(Tree_num);
         Tree_init();
 		glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 		Info::RaiseCurTextureNum();
@@ -127,32 +130,18 @@ void Tree::Tree_init(){
 			if(type[i] == 1) {
 				gr_size[i] *= 1.6;
 			}
-			if (data.z < 100.0 && data.z > 3.0/* && (distance(Vector3D(3000, 2000, 0), tree[i]) < 500 ||
-				distance(Vector3D(1600, 2500, 0), tree[i]) < 600
-				|| distance(Vector3D(5000, 2000, 0), tree[i]) < 1000
-				|| distance(Vector3D(3000, 6000, 0), tree[i]) < 500
-				|| distance(Vector3D(6000, 12000, 0), tree[i]) < 1000
-				|| distance(Vector3D(8000, 10000, 0), tree[i]) < 1000
-				|| distance(Vector3D(4000, 9000, 0), tree[i]) < 1000
-				|| distance(Vector3D(7000, 6000, 0), tree[i]) < 1000
-				|| distance(Vector3D(10000, 1000, 0), tree[i]) < 1000
-				|| distance(Vector3D(12000, 8000, 0), tree[i]) < 1000
-				|| distance(Vector3D(6000, 4000, 0), tree[i]) < 1000
-				|| distance(Vector3D(3000, 7000, 0), tree[i]) < 1000
-				|| distance(Vector3D(9000, 13000, 0), tree[i]) < 1000)*/) {
-				bool flag = true;
-				for(int j = 0; j < i; j++) {
-					if(distance(tree[j],tree[i]) < 1.0) flag = false;
-				}
-			/*	if (flag) {
-					if (type[i] == 2) model[2].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
-					else if (type[i] == 0) model[0].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
-					else if (type[i] == 1) model[1].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
-					
-					
-				}*/
-				break;
+			bool flag = true;
+			for(int j = 0; j < i; j++) {
+				if(distance(tree[j],tree[i]) < 2.0) flag = false;
 			}
+				if (flag && false) {
+					if (distance(tree[i], Info::GetForestLocation()) < FOREST_SIZE) {
+						if (type[i] == 2) matrix[i] = model[2].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
+						else if (type[i] == 0) matrix[i] = model[0].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
+						else if (type[i] == 1) matrix[i] = model[1].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
+					}
+				}
+				break;
 			}
         }
     }
@@ -256,7 +245,41 @@ void Tree::Draw() {
 
 	for (int i = 0; i < Tree_num; i++) {
 		float dst = distance(tree[i], player);
-		if (yaw == 0.0 && dst > 2500.0) continue;
+		if (dst > TREE_WINDOW) {
+			bool flag = false;
+			Vector3D oldPos = tree[i];
+			if (tree[i].x - player.x < -TREE_WINDOW) {
+				tree[i].x += TREE_WINDOW * 2.0;
+				flag = true;
+			}
+			if (tree[i].y - player.y < -TREE_WINDOW) {
+				tree[i].y += TREE_WINDOW * 2.0;
+				flag = true;
+			}
+			if (tree[i].x - player.x > TREE_WINDOW) {
+				tree[i].x -= TREE_WINDOW * 2.0;
+				flag = true;
+			}
+			if (tree[i].y - player.y > TREE_WINDOW) {
+				tree[i].y -= TREE_WINDOW * 2.0;
+				flag = true;
+			}
+			if (flag) {
+				/*if (distance(oldPos, Info::GetForestLocation()) < FOREST_SIZE) {
+					Collision::DeleteBody(matrix[i]);
+				}
+				if (distance(tree[i], Info::GetForestLocation()) < FOREST_SIZE && tree[i].z > 10 && tree[i].z < 200) {
+					if (type[i] == 2) matrix[i] = model[2].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
+					else if (type[i] == 0) matrix[i] = model[0].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
+					else if (type[i] == 1) matrix[i] = model[1].addCollision(tree[i], Vector3D(0, 0, angle[i]), Vector3D(gr_size[i], gr_size[i], gr_size[i]), true);
+				}*/
+				tree[i].z = CalcTerHeight(Vector3D(tree[i].x, tree[i].y, 0.0));
+			}
+			continue;
+		}
+		if (distance(tree[i], Info::GetForestLocation()) >= FOREST_SIZE) continue;
+		if (yaw == 0.0 && dst > TREE_WINDOW) continue;
+		if (tree[i].z < 10 || tree[i].z > 200) continue;
 		else if (yaw != 0.0 && dst > Info::GetShadowDist()) continue;
 		Vector3D a = tree[i] - Camera::getPosition();
 		a.Normalize();
@@ -316,7 +339,9 @@ void Tree::Draw() {
 
 	for (int i = 0; i < Tree_num; i++) {
 		float dst = distance(tree[i], player);
-		if (yaw == 0.0 && dst > 2500.0) continue;
+		if (yaw == 0.0 && dst > TREE_WINDOW) continue;
+		if (tree[i].z < 10 || tree[i].z > 200) continue;
+		if (distance(tree[i], Info::GetForestLocation()) >= FOREST_SIZE) continue;
 		else if (yaw != 0.0 && dst > Info::GetShadowDist()) continue;
 		Vector3D a = tree[i] - Camera::getPosition();
 		a.Normalize();

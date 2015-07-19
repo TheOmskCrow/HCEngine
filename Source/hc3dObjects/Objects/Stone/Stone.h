@@ -15,7 +15,7 @@ namespace hc3d {
 		Vector3D *stone, pos;
 		float offset;
 		float *cadr;
-		int *matrix;
+		std::vector<BodyData*> matrix;
 		Vector3D *angle;
 		Vector3D *gr_size;
 		int *type;

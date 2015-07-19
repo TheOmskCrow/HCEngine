@@ -28,9 +28,6 @@
     <Filter Include="Toolkit">
       <UniqueIdentifier>{5d51ab4f-2264-4428-adab-a28a124e9e46}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Storage">
-      <UniqueIdentifier>{f628ff0a-86ce-4c42-9969-2f0fe38cddb5}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -83,12 +80,6 @@
     </ClInclude>
     <ClInclude Include="hc3dToolkit.h">
       <Filter>Toolkit</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderLib.h">
-      <Filter>Storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -154,12 +145,6 @@
     </ClCompile>
     <ClCompile Include="hc3dToolkit.cpp">
       <Filter>Toolkit</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Storage</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderLib.cpp">
-      <Filter>Storage</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -162,7 +162,6 @@
     <ClInclude Include="Control\Shadow.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="hc3dControllers.h" />
-    <ClInclude Include="Renderer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -187,7 +186,6 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="hc3dControllers.cpp" />
-    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

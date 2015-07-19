@@ -19,7 +19,7 @@ namespace hc3d {
 		GLuint shaderprogram, tex;
 		int vert_shader, frag_shader;
 		int state;
-		int matrix;
+		BodyData* matrix;
 	private:
 		void DetectCheckPoints();
 		float distance(Vector3D a, Vector3D b);

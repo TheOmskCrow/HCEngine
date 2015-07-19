@@ -1,4 +1,5 @@
 #pragma once
+#include "../dllstorage.h"
 #include <map>
 #include <string>
 #include "hc3dContentLoader.h"
@@ -8,7 +9,7 @@ namespace hc3d {
 
 	typedef std::map<std::string, GLuint> Shaders;
 
-	class HC3D_API ShaderLib{
+	class HC3DSTORAGE_API ShaderLib{
 	private:
 		static Shaders shaders;
 	public:

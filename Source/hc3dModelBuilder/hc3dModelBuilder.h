@@ -33,7 +33,7 @@ namespace hc3d {
 		Vector3D *get_normal_list();
 		int normal_list_size();
 		int faces_list_size();
-		int addCollision(Vector3D translation, Vector3D rotation, Vector3D scale, bool isStatic = true);
+		BodyData* addCollision(Vector3D translation, Vector3D rotation, Vector3D scale, bool isStatic = true);
 		void AddHitBoxModel(const char* name);
 		void AddModelMass(float mass);
 		void AddLodModels(std::vector<std::string> names, std::vector<float> distance);

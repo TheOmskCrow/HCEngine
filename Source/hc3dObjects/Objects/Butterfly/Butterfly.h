@@ -21,9 +21,12 @@ namespace hc3d {
 		bool *sitting;
 		bool *reverse;
 		float *gr_size;
+		bool *drawable;
 		Vector3D* qSort(Vector3D *A, int low, int high);
 		float distance(Vector3D a, Vector3D b);
-		void but_init();
+		void ButsInit();
+		void ButInit(int);
+		void ButReset(int);
 		float rnd();
 		void setShader();
 	public:

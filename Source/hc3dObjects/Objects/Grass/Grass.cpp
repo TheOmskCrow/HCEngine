@@ -6,7 +6,7 @@
 #include "hc3dObjects.h"
 #include "hc3dMath.h"
 #include "../Water/Water.h"
-
+#define WINDOW 1000
 using namespace hc3d;
 
 float Grass::windWave = 0.0;
@@ -41,19 +41,50 @@ void Grass::qSort(vector<Vector3D> &A, vector<int> &B, int low, int high) {
 	if (i < high) qSort(A, B, i, high);
 }
 
+void Grass::CalcGrassType(int i) {
+	int state = 0;
+	if (distance(grass[i], Info::GetForestLocation()) < 800) state = 1;
+	else if (distance(grass[i], Info::GetForestLocation() - Vector3D(1600, 0, 0)) < 800 || distance(grass[i], Info::GetForestLocation() - Vector3D(0, 1600, 0)) < 800) state = 2;
+	int r = rand() % 100;
+	switch (state) {
+	case 0:
+		type[i] = 0;
+		if (r < 30) type[i] = 0;
+		else if (r < 60)type[i] = 1;
+		else if (r < 92)type[i] = 2;
+		else if (r < 96)type[i] = 3;
+		else type[i] = 4;
+		break;
+	case 1:
+		type[i] = 0;
+		if (r < 20) type[i] = 0;
+		else if (r < 40)type[i] = 1;
+		else if (r < 60)type[i] = 2;
+		else type[i] = 5;
+		break;
+	case 2:
+		type[i] = 0;
+		if (r < 20) type[i] = 0;
+		else if (r < 40)type[i] = 1;
+		else if (r < 60)type[i] = 2;
+		else if (r < 80)type[i] = 3;
+		else type[i] = 4;
+		break;
+	}
+}
+
 void Grass::Init(){
 	model = new Model[8];
 	for (int i = 0; i < 8; i++) {
 		model[i].no_shaders();
 	}
 	model[0].init("Models/grass/grass4.obj", "null", "null", "null");
+	model[3].setScale(0.6);
 	model[3].init("Models/fl2.obj", "null", "null", "null");
-
-	model[4].init("Models/bushes/autumn.obj", "null", "null", "null"/*,0.25*/);
-	model[5].init("Models/bushes/autumn1.obj", "null", "null", "null"/*,0.25*/);
-	model[6].init("Models/bushes/autumn2.obj", "null", "null", "null"/*,0.25*/);
-	model[7].init("Models/fl3.obj", "null", "null", "null");
-	//model[7].init("Models/fern1.obj", "null", "null", "null");
+	model[4].init("Models/fl3.obj", "null", "null", "null");
+	model[5].setScale(0.5);
+	model[5].init("Models/fern1.obj", "null", "null", "null");
+	
 	grass_num = 101000;
 	offset = 0.0;
 	terNormal = new Vector3D[grass_num];
@@ -67,26 +98,24 @@ void Grass::Init(){
 	grass_init();
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex = LoadTexture("Texture/grass4.png");
+	tex = LoadTexture("Texture/grass3.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex1 = LoadTexture("Texture/fl2.png");
+	tex1 = LoadTexture("Texture/grass4.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex2 = LoadTexture("Texture/autumn_bush.png");
+	tex2 = LoadTexture("Texture/grass7.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex3 = LoadTexture("Texture/autumn_bush1.png");
+	tex3 = LoadTexture("Texture/fl2.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex4 = LoadTexture("Texture/autumn_bush2.png");
+	tex4 = LoadTexture("Texture/fl3.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex5 = LoadTexture("Texture/fl1.png");
-//	tex5 = LoadTexture("Texture/plants/fern1.png");
+	tex5 = LoadTexture("Texture/plants/fern1.png");
 	glActiveTexture(GL_TEXTURE0 + Info::GetCurTextureNum());
 	Info::RaiseCurTextureNum();
-	tex6 = LoadTexture("Texture/grass4.png");
 	shaderprogram = LoadShader("Shaders/grass.vert", "Shaders/grass.frag");
 }
 float rnd() {
@@ -96,8 +125,8 @@ void Grass::grass_init() {
 	for (int i = 0; i < grass_num; i++) {
 		while (1) {
 			Vector3D data;
-			data.x = float(rand()) * float(rand() % 10 + 1);
-			data.y = float(rand()) * float(rand() % 10 + 1);
+			data.x = float(rand()) + rnd();
+			data.y = float(rand()) + rnd();
 			data.z = CalcTerHeight(Vector3D(data.x, data.y, 0.0));
 			Vector3D ter_normal = CalcTerNormal(Vector3D(data.x, data.y, 0.0));
 			ter_normal /= ter_normal*ter_normal;
@@ -105,109 +134,29 @@ void Grass::grass_init() {
 			if (ter_normal * Vector3D(0.0, 0.0, 1.0) < 0.992) continue;
 			terNormal[i] = ter_normal;
 
-			//std::cout << ter_normal*Vector3D(0.0, 0.0, 1.0) << std::endl;
 			float grass_coeff = hc3d::Math::hc3dMax(0.0, hc3d::Math::hc3dMin(1.0, (ter_normal*Vector3D(0.0, 0.0, 1.0))))*100.0;
 			grass_coeff -= 0.975;
 			grass_coeff *= 40.0;
 			grass[i] = data;
-			int r = rand() % 1600;
-			type[i] = 0;
-			//	if (distance(Vector3D(1200, 2000, 0), grass[i]) < 300) {
-			if (r > 60 && r < 80) type[i] = 5;
-			//	}
-			//if (distance(Vector3D(1000, 1800, 0), grass[i]) < 300) {
-			else if (r > 80 && r < 95) type[i] = 1;
-			//	}
-			//if(r > 82 && r < 95) type[i] = 1;			
-			//if (distance(Vector3D(2800, 750, 0), grass[i]) < 400 || distance(Vector3D(1800, 630, 0), grass[i]) < 300 || distance(Vector3D(1100, 980, 0), grass[i]) < 200 || distance(Vector3D(500, 1700, 0), grass[i]) < 500) {
-				else if (r == 95)type[i] = 2;
-				else if (r == 96)type[i] = 3;
-				else if (r == 97)type[i] = 4;
+			CalcGrassType(i);
 			//}
-			if (type[i] != 0) grass[i].z--;
 			angle[i] = rnd()*360.0;
 			cadr[i] = (data.x + data.y) / 100.0;
 			gr_size[i] = rnd()*2.0 + 1.0;
-			if (data.z < 150.0 && data.z > 3.0) {
 				//printf("grass_coeff = %.2f\n",grass_coeff);
-				int number = 0;
-				for (int p = data.x - 5; p <= data.x + 5; p += 10) {
-					for (int k = data.y - 5; k <= data.y + 5; k += 10) {
-						borders[i][number].z = CalcTerHeight(Vector3D(p, k, 0.0));
-						borders[i][number].x = p;
-						borders[i][number].y = k;
-						number++;
-					}
+			int number = 0;
+			for (int p = data.x - 5; p <= data.x + 5; p += 10) {
+				for (int k = data.y - 5; k <= data.y + 5; k += 10) {
+					borders[i][number].z = CalcTerHeight(Vector3D(p, k, 0.0));
+					borders[i][number].x = p;
+					borders[i][number].y = k;
+					number++;
 				}
-				break;
 			}
+			break;
 		}
 	}
-	/*
-	for (int i = grass_num - 1000; i < grass_num - 500; i++) {
-	while (1) {
-	Vector3D data;
-	data.x = (((rand() % 3000)  + 9000 )/ 10.0);
-	data.y = (((rand() % 3000) + 17000 )/ 10.0);
-	data.z = Terrain::calc_height(Vector3D(data.x, data.y, 0.0));
-	if (distance(Vector3D(1050, 1850, 0), data) > 150) continue;
-	Vector3D ter_normal = Terrain::calc_normal(Vector3D(data.x, data.y, 0.0));
-	ter_normal /= ter_normal*ter_normal;
-
-	if (ter_normal * Vector3D(0.0, 0.0, 1.0) < 0.992) continue;
-	terNormal[i] = ter_normal;
-
-	//std::cout << ter_normal*Vector3D(0.0, 0.0, 1.0) << std::endl;
-	float grass_coeff = max(0.0, min(1.0, (ter_normal*Vector3D(0.0, 0.0, 1.0))))*100.0;
-	grass_coeff -= 0.975;
-	grass_coeff *= 40.0;
-	grass[i] = data;
-	//	if (distance(Vector3D(1200, 2000, 0), grass[i]) < 300) {
-	type[i] = 1;
-	//	}
-	//if (distance(Vector3D(1000, 1800, 0), grass[i]) < 300) {
-	grass[i].z--;
-	angle[i] = rnd()*360.0;
-	cadr[i] = (data.x + data.y) / 100.0;
-	gr_size[i] = rnd()*2.0 + 1.0;
-	if (data.z < 150.0 && data.z > 3.0) {
-	//printf("grass_coeff = %.2f\n",grass_coeff);
-	break;
-	}
-	}
-	}
-	for (int i = grass_num - 500; i < grass_num; i++) {
-	while (1) {
-	Vector3D data;
-	data.x = (((rand() % 3000) + 8500) / 10.0);
-	data.y = (((rand() % 3000) + 16500) / 10.0);
-	data.z = Terrain::calc_height(Vector3D(data.x, data.y, 0.0));
-	if (distance(Vector3D(1000, 1800, 0), data) > 150) continue;
-	Vector3D ter_normal = Terrain::calc_normal(Vector3D(data.x, data.y, 0.0));
-	ter_normal /= ter_normal*ter_normal;
-
-	if (ter_normal * Vector3D(0.0, 0.0, 1.0) < 0.992) continue;
-	terNormal[i] = ter_normal;
-
-	//std::cout << ter_normal*Vector3D(0.0, 0.0, 1.0) << std::endl;
-	float grass_coeff = max(0.0, min(1.0, (ter_normal*Vector3D(0.0, 0.0, 1.0))))*100.0;
-	grass_coeff -= 0.975;
-	grass_coeff *= 40.0;
-	grass[i] = data;
-	//	if (distance(Vector3D(1200, 2000, 0), grass[i]) < 300) {
-	type[i] = 5;
-	//	}
-	//if (distance(Vector3D(1000, 1800, 0), grass[i]) < 300) {
-	grass[i].z--;
-	angle[i] = rnd()*360.0;
-	cadr[i] = (data.x + data.y) / 100.0;
-	gr_size[i] = rnd()*2.0 + 1.0;
-	if (data.z < 150.0 && data.z > 3.0) {
-	//printf("grass_coeff = %.2f\n",grass_coeff);
-	break;
-	}
-	}
-	}*/
+	
 }
 void Grass::setShader() {
 	//Shadow shadow;
@@ -291,9 +240,44 @@ void Grass::Draw() {
 	number.reserve(grass_num * 0.25);
 
 	for (int i = 0; i < grass_num; i++) {
-		const float dst = distance(*(grass0 + i), player);
+		Vector3D grassLeaf = *(grass0 + i);
+		const float dst = distance(grassLeaf, player);
 		distVec[i] = dst;
-		if (dst > 500.0) continue;
+		if (dst > WINDOW) {
+			bool flag = false;
+			if (grass[i].x - player.x < -WINDOW) {
+				grass[i].x += WINDOW * 2.0;
+				flag = true;
+			}
+			if (grass[i].y - player.y < -WINDOW) {
+				grass[i].y += WINDOW * 2.0;
+				flag = true;
+			}
+			if (grass[i].x - player.x > WINDOW) {
+				grass[i].x -= WINDOW * 2.0;
+				flag = true;
+			}
+			if (grass[i].y - player.y > WINDOW) {
+				grass[i].y -= WINDOW * 2.0;
+				flag = true;
+			}
+			if (flag) {
+				grass[i].z = CalcTerHeight(Vector3D(grass[i].x, grass[i].y, 0.0));
+				CalcGrassType(i);
+				int number = 0;
+				for (int p = grass[i].x - 5; p <= grass[i].x + 5; p += 10) {
+					for (int k = grass[i].y - 5; k <= grass[i].y + 5; k += 10) {
+						borders[i][number].z = CalcTerHeight(Vector3D(p, k, 0.0));
+						borders[i][number].x = p;
+						borders[i][number].y = k;
+						number++;
+					}
+				}
+			}
+			continue;
+		}
+		if (dst > 500) continue;
+		if (grass[i].z > 150 || grass[i].z < 10) continue;
 		if (yaw == 1.0 && dst > 40.0) continue;
 		else if (yaw == 2.0 && dst > 100.0) continue;
 		else if (yaw == 3.0 && dst > 200.0) continue;
@@ -318,16 +302,17 @@ void Grass::Draw() {
 		glPushMatrix();
 		glTranslated(newgrass[i].x, newgrass[i].y, newgrass[i].z - 0.3);
 		glRotated(*(angle0 + numberI), 0, 0, 1);
-		if (*(type0 + numberI) == 0) {
+		if (type[numberI] == 0 || type[numberI] == 1 || type[numberI] == 2) {
 
 			if (yaw == 0) {
-				if ((*(angle0 + numberI)) > 50.0) {
+				glUniform1i(u_model0, 10 + type[numberI]);
+				/*if ((*(angle0 + numberI)) > 50.0) {
 					glScaled(1.0, 1.0, 1.3);
 					glUniform1i(u_model0, 16);
 				}
 				else {
 					glUniform1i(u_model0, 10);
-				}
+				}*/
 				glUniform1i(u_type0, 0);
 				glUniform3f(u_ter0, terNormal[numberI].x, terNormal[numberI].y, terNormal[numberI].z);
 				glUniform3f(glGetUniformLocation(
@@ -350,29 +335,11 @@ void Grass::Draw() {
 				if ((*(angle0 + numberI)) > 50.0) glScaled(1.0, 1.0, 1.0 / 1.3);
 			}
 		}
-		else if (type[numberI] == 1){
-			glUniform1i(u_model0, 11);
-			glUniform1i(u_type0, 1);
-			if (dst < 500) {
-				glTranslated(0, 0, 0.3);
-				model[3].draw();
-				glTranslated(0, 0, -0.3);
-			}
-			samples += 2936;
-		}
-		else if (type[numberI] == 2){
-			glUniform1i(u_model0, 12);
-			glUniform1i(u_type0, 1);
-			glTranslated(0, 0, 0.3);
-				model[4].draw();
-			glTranslated(0, 0, -0.3);
-			samples += 2936;
-		}
 		else if (type[numberI] == 3){
 			glUniform1i(u_model0, 13);
 			glUniform1i(u_type0, 1);
 			glTranslated(0, 0, 0.3);
-				model[5].draw();
+				model[3].draw();
 			glTranslated(0, 0, -0.3);
 			samples += 2936;
 		}
@@ -380,18 +347,16 @@ void Grass::Draw() {
 			glUniform1i(u_model0, 14);
 			glUniform1i(u_type0, 1);
 			glTranslated(0, 0, 0.3);
-				model[6].draw();
+				model[4].draw();
 			glTranslated(0, 0, -0.3);
 			samples += 2936;
 		}
 		else if (type[numberI] == 5){
 			glUniform1i(u_model0, 15);
 			glUniform1i(u_type0, 1);
-			if (dst < 500) {
 				glTranslated(0, 0, 0.3);
-				model[7].draw();
+				model[5].draw();
 				glTranslated(0, 0, -0.3);
-			}
 			samples += 2936;
 		}
 		glRotated(-*(angle0 + numberI), 0, 0, 1);
